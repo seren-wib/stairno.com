@@ -10,4 +10,5 @@ export type Dictionary = {
   news: { heading: string; empty: string };
   contact: { heading: string; action: string };
   footer: { source: string };
+  notFound: { heading: string; home: string };
 };

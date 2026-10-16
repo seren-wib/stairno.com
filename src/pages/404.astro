@@ -1,0 +1,18 @@
+---
+import { site } from '../data/site';
+import { defaultLocale, localePath, locales, t } from '../i18n';
+import Base from '../layouts/Base.astro';
+---
+
+<Base locale={defaultLocale} title={`404 · ${site.name}`} description="Not found" noindex>
+  <main class="container not-found">
+    {locales.map((locale) => (
+      <section lang={locale}>
+        <h1>{t(locale).notFound.heading}</h1>
+        <a class="button" href={localePath(locale)}>
+          {t(locale).notFound.home}
+        </a>
+      </section>
+    ))}
+  </main>
+</Base>

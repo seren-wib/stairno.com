@@ -13,7 +13,10 @@ import { locales, t } from '../../src/i18n';
 
 const forbidden = /회사|스튜디오|company|studio/i;
 
-async function render(component: Parameters<AstroContainer['renderToString']>[0], props: object) {
+async function render(
+  component: Parameters<AstroContainer['renderToString']>[0],
+  props: Record<string, unknown>,
+) {
   const container = await AstroContainer.create();
   return parse(await container.renderToString(component, { props }));
 }

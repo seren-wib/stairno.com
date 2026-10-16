@@ -24,3 +24,6 @@ Thumbs.db
 # logs
 npm-debug.log*
 *.log
+
+# claude desktop preview config
+.claude/launch.json

@@ -1,0 +1,15 @@
+---
+import { t, type Locale } from '../i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const copy = t(locale).news;
+---
+
+<section class="section" aria-labelledby="news-title">
+  <h2 id="news-title">{copy.heading}</h2>
+  <p class="placeholder">{copy.empty}</p>
+</section>
