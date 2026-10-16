@@ -1,0 +1,60 @@
+---
+import { localePath, locales, t, type Locale } from '../i18n';
+import { site } from '../data/site';
+
+interface Props {
+  locale: Locale;
+  path?: string;
+  title?: string;
+  description?: string;
+}
+
+const { locale, path = '' } = Astro.props;
+const dictionary = t(locale);
+const title = Astro.props.title ?? dictionary.meta.title;
+const description = Astro.props.description ?? dictionary.meta.description;
+const canonical = new URL(localePath(locale, path), site.url).href;
+const ogLocale = locale === 'ko' ? 'ko_KR' : 'en_US';
+---
+
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script is:inline>
+      // Apply the theme before paint (FR-15). Same rule as src/lib/theme.ts resolveTheme.
+      (function () {
+        var stored = null;
+        try {
+          stored = localStorage.getItem('theme');
+        } catch (e) {}
+        var theme =
+          stored === 'light' || stored === 'dark'
+            ? stored
+            : window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+              ? 'dark'
+              : 'light';
+        document.documentElement.setAttribute('data-theme', theme);
+        document.documentElement.style.colorScheme = theme;
+      })();
+    </script>
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {locales.map((l) => (
+      <link rel="alternate" hreflang={l} href={new URL(localePath(l, path), site.url).href} />
+    ))}
+    <link rel="alternate" hreflang="x-default" href={`${site.url}/`} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content={ogLocale} />
+    <slot name="head" />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

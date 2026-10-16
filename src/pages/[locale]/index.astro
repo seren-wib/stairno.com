@@ -1,19 +1,18 @@
 ---
+import Header from '../../components/Header.astro';
+import { locales } from '../../i18n';
+import Base from '../../layouts/Base.astro';
+
 export function getStaticPaths() {
-  return [{ params: { locale: 'ko' } }, { params: { locale: 'en' } }];
+  return locales.map((locale) => ({ params: { locale } }));
 }
 
 const { locale } = Astro.params;
 ---
 
-<!doctype html>
-<html lang={locale}>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Stairno</title>
-  </head>
-  <body>
+<Base locale={locale}>
+  <Header locale={locale} />
+  <main>
     <h1>Stairno</h1>
-  </body>
-</html>
+  </main>
+</Base>
