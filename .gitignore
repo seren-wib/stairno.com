@@ -1,0 +1,26 @@
+# dependencies
+node_modules/
+
+# build
+dist/
+.astro/
+
+# local spec originals (Google Docs holds the shared copy)
+docs/specs/
+
+# environment
+.env
+.env.*
+!.env.example
+
+# editor and OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+
+# logs
+npm-debug.log*
+*.log
