@@ -1,0 +1,27 @@
+---
+// Root entry. Picks a locale from the browser language; see SDD 3.5.
+---
+
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Stairno</title>
+    <noscript>
+      <meta http-equiv="refresh" content="0; url=/ko/" />
+    </noscript>
+    <script is:inline>
+      var ko = (navigator.languages || [navigator.language]).some(function (l) {
+        return /^ko\b/i.test(l);
+      });
+      location.replace(ko ? '/ko/' : '/en/');
+    </script>
+  </head>
+  <body>
+    <p>
+      <a href="/ko/">한국어</a> · <a href="/en/">English</a>
+    </p>
+  </body>
+</html>

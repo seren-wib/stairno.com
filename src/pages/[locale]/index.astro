@@ -1,0 +1,19 @@
+---
+export function getStaticPaths() {
+  return [{ params: { locale: 'ko' } }, { params: { locale: 'en' } }];
+}
+
+const { locale } = Astro.params;
+---
+
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Stairno</title>
+  </head>
+  <body>
+    <h1>Stairno</h1>
+  </body>
+</html>
