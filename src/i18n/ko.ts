@@ -24,4 +24,5 @@ export const ko: Dictionary = {
   news: { heading: '소식', empty: '아직 소식이 없습니다.' },
   contact: { heading: '연락', action: '메일 보내기' },
   footer: { source: '소스 코드' },
+  notFound: { heading: '페이지를 찾을 수 없습니다', home: '한국어 홈으로' },
 };

@@ -25,4 +25,5 @@ export const en: Dictionary = {
   news: { heading: 'News', empty: 'Nothing to announce yet.' },
   contact: { heading: 'Contact', action: 'Send an email' },
   footer: { source: 'Source code' },
+  notFound: { heading: 'Page not found', home: 'Go to the English home' },
 };

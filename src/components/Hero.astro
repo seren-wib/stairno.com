@@ -1,0 +1,18 @@
+---
+import { site } from '../data/site';
+import { t, type Locale } from '../i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const copy = t(locale).hero;
+---
+
+<section class="hero" aria-labelledby="hero-title">
+  <p class="eyebrow">{copy.tagline}</p>
+  <h1 id="hero-title">{site.name}</h1>
+  <p class="lead">{copy.intro}</p>
+  <p class="muted">{copy.etymology}</p>
+</section>

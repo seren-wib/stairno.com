@@ -1,0 +1,20 @@
+---
+import { site } from '../data/site';
+import { t, type Locale } from '../i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container">
+    <span>
+      © {year} {site.name}
+    </span>
+    <a href={site.github}>{t(locale).footer.source}</a>
+  </div>
+</footer>
