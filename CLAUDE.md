@@ -6,12 +6,12 @@
 
 이 레포는 설계 문서를 따라 짠다. 문서와 코드가 어긋나면 둘 중 하나를 같은 PR에서 고친다.
 
-| 문서 | 원본 | 공유본 |
-| --- | --- | --- |
-| 프로젝트 계획서 | `docs/specs/plan.md` | [Google Docs](https://docs.google.com/document/d/19ZMOOU9a8McIlXUp4gqBGZSnI_teIMJkoQCWvBj2B1E/edit) |
-| 요구사항 명세서 (SRS) | `docs/specs/srs.md` | [Google Docs](https://docs.google.com/document/d/1xL1lK83hd1QYACoqibiINdR5z7eX14g9BXqUn4PjjK0/edit) |
-| 설계 명세서 (SDD) | `docs/specs/sdd.md` | [Google Docs](https://docs.google.com/document/d/19pXJ_bnOkJaKumNUpx5OIEHD7T0Nh9Ikw8f4WMMiNr0/edit) |
-| 테스트와 배포 | `docs/specs/test-deploy.md` | [Google Docs](https://docs.google.com/document/d/163y2aNPE-6zIXontwdoe8add6d0EpetFqYLONdxRZoc/edit) |
+| 문서                  | 원본                        | 공유본                                                                                              |
+| --------------------- | --------------------------- | --------------------------------------------------------------------------------------------------- |
+| 프로젝트 계획서       | `docs/specs/plan.md`        | [Google Docs](https://docs.google.com/document/d/19ZMOOU9a8McIlXUp4gqBGZSnI_teIMJkoQCWvBj2B1E/edit) |
+| 요구사항 명세서 (SRS) | `docs/specs/srs.md`         | [Google Docs](https://docs.google.com/document/d/1xL1lK83hd1QYACoqibiINdR5z7eX14g9BXqUn4PjjK0/edit) |
+| 설계 명세서 (SDD)     | `docs/specs/sdd.md`         | [Google Docs](https://docs.google.com/document/d/19pXJ_bnOkJaKumNUpx5OIEHD7T0Nh9Ikw8f4WMMiNr0/edit) |
+| 테스트와 배포         | `docs/specs/test-deploy.md` | [Google Docs](https://docs.google.com/document/d/163y2aNPE-6zIXontwdoe8add6d0EpetFqYLONdxRZoc/edit) |
 
 - `docs/specs/`는 git에서 제외된다. 로컬에 없으면 Google Docs를 읽는다. Drive 폴더는 `Stairno/stairno.com`
 - 문서를 고치면 마크다운 원본을 고치고 Google Docs에 다시 올린다. Google Docs만 고치지 않는다
