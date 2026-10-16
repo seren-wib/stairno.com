@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 300" width="860" height="300" role="img" aria-label="Build flow: source files with locale dictionaries and theme logic go through astro build, which writes static HTML for /ko/ and /en/ plus a 404 page, and the main branch deploys that output to Cloudflare Pages.">
+  <style>
+    text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; fill: #1f2328; }
+    .title { font-size: 15px; font-weight: 700; }
+    .body { font-size: 12.5px; fill: #57606a; }
+    .box { fill: #ffffff; stroke: #d0d7de; stroke-width: 1.5; }
+    .accent { fill: #4f6bf6; }
+    .label { font-size: 12px; fill: #57606a; }
+    .arrow { stroke: #8c959f; stroke-width: 2; fill: none; marker-end: url(#head); }
+  </style>
+  <defs>
+    <marker id="head" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0,1 L9,5 L0,9 z" fill="#8c959f"/>
+    </marker>
+  </defs>
+  <rect x="0.75" y="0.75" width="858.5" height="298.5" rx="16" fill="#f6f8fa" stroke="#d0d7de" stroke-width="1.5"/>
+
+  <!-- src -->
+  <rect class="box" x="36" y="56" width="210" height="188" rx="12"/>
+  <text class="title" x="56" y="86">src/</text>
+  <text class="body" x="56" y="114">i18n/ko.ts, en.ts</text>
+  <text class="body" x="56" y="136">data/projects.ts, site.ts</text>
+  <text class="body" x="56" y="158">lib/theme.ts</text>
+  <text class="body" x="56" y="180">components/*.astro</text>
+  <text class="body" x="56" y="202">pages/[locale]/index.astro</text>
+  <text class="body" x="56" y="224">styles/tokens.css</text>
+
+  <!-- arrow 1 -->
+  <path class="arrow" d="M246 150 L312 150"/>
+  <text class="label" x="279" y="138" text-anchor="middle">astro build</text>
+
+  <!-- dist -->
+  <rect class="box" x="314" y="56" width="210" height="188" rx="12"/>
+  <text class="title" x="334" y="86">dist/</text>
+  <text class="body" x="334" y="114">index.html  (picks a locale)</text>
+  <text class="body" x="334" y="136">ko/index.html</text>
+  <text class="body" x="334" y="158">en/index.html</text>
+  <text class="body" x="334" y="180">404.html</text>
+  <text class="body" x="334" y="202">robots.txt, sitemap-index.xml</text>
+  <text class="body" x="334" y="224">no server, no database</text>
+
+  <!-- arrow 2 -->
+  <path class="arrow" d="M524 150 L590 150"/>
+  <text class="label" x="557" y="138" text-anchor="middle">main → deploy.yml</text>
+
+  <!-- pages -->
+  <rect class="box" x="592" y="56" width="232" height="188" rx="12"/>
+  <text class="title" x="612" y="86">Cloudflare Pages</text>
+  <text class="body" x="612" y="114">stairno.com</text>
+  <text class="body" x="612" y="136">/ → /ko/ or /en/ by browser language</text>
+  <text class="body" x="612" y="158">theme: system, then localStorage</text>
+  <text class="body" x="612" y="180">cards link out to Works, Games, Labs</text>
+  <text class="body" x="612" y="202">mailto only; no forms, no payments</text>
+
+  <!-- tests strip -->
+  <rect x="36" y="258" width="788" height="26" rx="8" fill="#eaeef2"/>
+  <text class="body" x="430" y="276" text-anchor="middle">CI on every PR: prettier → astro check → vitest (unit, component, integration on dist/)</text>
+</svg>
