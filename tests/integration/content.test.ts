@@ -68,7 +68,9 @@ describe.each(locales)('home content /%s/', (locale) => {
     const body = home.querySelector('body');
     const order = body?.childNodes
       .filter((n) => n.nodeType === 1)
-      .map((n) => (n as HTMLElement).tagName.toLowerCase());
+      .map((n) => (n as HTMLElement).tagName.toLowerCase())
+      // Astro hoists component scripts into the body; landmarks are what matter here.
+      .filter((tag) => tag !== 'script');
     expect(order?.slice(0, 3)).toEqual(['header', 'main', 'footer']);
     const headings = home.querySelectorAll('main h2').map((h) => h.text.trim());
     expect(headings).toEqual([

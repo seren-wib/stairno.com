@@ -93,7 +93,7 @@ describe('Footer', () => {
       for (const project of projects) {
         const link = root.querySelector(`a[href="${project.url}"]`);
         expect(link?.text.trim()).toBe(project.name[locale]);
-        expect(link?.getAttribute('target')).toBeNull();
+        expect(link?.hasAttribute('target')).toBe(false);
       }
       expect(root.text).toContain(t(locale).footer.projects);
     },

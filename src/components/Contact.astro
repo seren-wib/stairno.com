@@ -12,8 +12,10 @@ const copy = t(locale).contact;
 
 <section class="section contact" aria-labelledby="contact-title">
   <div class="container">
-    <h2 id="contact-title">{copy.heading}</h2>
-    <a class="contact-link" href={`mailto:${site.email}`}>
+    <h2 id="contact-title" data-reveal>
+      {copy.heading}
+    </h2>
+    <a class="contact-link" href={`mailto:${site.email}`} data-reveal="2">
       {copy.action}
     </a>
   </div>

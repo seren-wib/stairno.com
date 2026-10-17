@@ -21,9 +21,14 @@ export const en: Dictionary = {
     etymology:
       'The name comes from Gothic stairno, “star”. Read in English it carries stair: a star climbing one step at a time.',
   },
-  projects: { heading: 'Projects' },
+  projects: {
+    heading: 'Projects',
+    previous: 'Previous project',
+    next: 'Next project',
+    goTo: 'Show {name}',
+  },
   news: { heading: 'News', empty: 'Nothing to announce yet.' },
   contact: { heading: 'Contact', action: 'Send an email' },
-  footer: { source: 'Source code' },
+  footer: { source: 'Source code', projects: 'Projects' },
   notFound: { heading: 'Page not found', home: 'Go to the English home' },
 };

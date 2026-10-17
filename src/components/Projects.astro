@@ -8,15 +8,87 @@ interface Props {
 }
 
 const { locale } = Astro.props;
+const copy = t(locale).projects;
+const INTERVAL = 5000;
 ---
 
-<section class="section" aria-labelledby="projects-title">
+<section class="section projects" aria-labelledby="projects-title">
   <div class="container">
-    <h2 id="projects-title">{t(locale).projects.heading}</h2>
-    <div class="steps">
-      {projects.map((project) => (
-        <ProjectCard project={project} locale={locale} />
+    <h2 id="projects-title" data-reveal>
+      {copy.heading}
+    </h2>
+  </div>
+  <div
+    class="slider"
+    data-slider
+    data-interval={INTERVAL}
+    aria-roledescription="carousel"
+    aria-label={copy.heading}
+  >
+    <div class="slides" data-slides>
+      {projects.map((project, index) => (
+        <div
+          class:list={['slide', `slide-${index + 1}`]}
+          data-slide
+          role="group"
+          aria-roledescription="slide"
+          aria-label={`${index + 1} / ${projects.length}`}
+          aria-hidden={index === 0 ? 'false' : 'true'}
+        >
+          <div class="container slide-inner">
+            <ProjectCard project={project} locale={locale} />
+          </div>
+        </div>
       ))}
+    </div>
+    <div class="container slider-controls">
+      <div class="dots" role="tablist">
+        {projects.map((project, index) => (
+          <button
+            type="button"
+            class:list={['dot', `dot-${index + 1}`]}
+            data-slider-dot
+            data-index={index}
+            role="tab"
+            aria-selected={index === 0 ? 'true' : 'false'}
+            aria-label={copy.goTo.replace('{name}', project.name[locale])}
+          />
+        ))}
+      </div>
+      <div class="arrows">
+        <button type="button" class="arrow" data-slider-prev aria-label={copy.previous}>
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+            <path
+              d="M15 5l-7 7 7 7"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            ></path>
+          </svg>
+        </button>
+        <button type="button" class="arrow" data-slider-next aria-label={copy.next}>
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+            <path
+              d="M9 5l7 7-7 7"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            ></path>
+          </svg>
+        </button>
+      </div>
     </div>
   </div>
 </section>
+
+<script>
+  import { createSlider } from '../lib/slider';
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-slider]')) {
+    createSlider(root);
+  }
+</script>
