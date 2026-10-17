@@ -84,6 +84,15 @@ describe('Header', () => {
   });
 });
 
+describe('Hero dots', () => {
+  it('FR-5 draws the staircase and star on a decorative canvas', async () => {
+    const root = await render(Hero, { locale: 'ko' });
+    const canvas = root.querySelector('canvas[data-hero-dots]');
+    expect(canvas).not.toBeNull();
+    expect(canvas?.getAttribute('aria-hidden')).toBe('true');
+  });
+});
+
 describe('scroll reveal', () => {
   it('marks hero copy with staggered reveal targets', async () => {
     const root = await render(Hero, { locale: 'ko' });
