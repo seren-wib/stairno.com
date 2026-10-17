@@ -6,6 +6,10 @@ describe('site constants', () => {
     expect(site.email).toMatch(/^[^@\s]+@[^@\s]+\.[^@\s]+$/);
   });
 
+  it('FR-8 uses the contact address on the site domain', () => {
+    expect(site.email).toBe(`contact@${new URL(site.url).hostname}`);
+  });
+
   it('FR-9 links to the GitHub repository', () => {
     expect(site.github).toMatch(/^https:\/\/github\.com\/.+/);
   });
