@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { STEPS, dotField, stairTop, starAt } from '../../src/lib/dots';
+import { STEPS, climbCycle, dotField, stairTop, starAt } from '../../src/lib/dots';
 
 describe('stairTop', () => {
   it('has no staircase on the left part of the field', () => {
@@ -67,5 +67,36 @@ describe('dotField', () => {
         expect(d.radius).toBeLessThanOrEqual(0.5);
       }
     }
+  });
+});
+
+describe('climbCycle', () => {
+  const timing = { delay: 0.4, climb: 2.8, hold: 1.5, fade: 0.5 };
+
+  it('waits on the first step during the delay', () => {
+    expect(climbCycle(0, timing)).toEqual({ progress: 0, strength: 1 });
+    expect(climbCycle(0.39, timing).progress).toBe(0);
+  });
+
+  it('climbs to the top and holds there', () => {
+    expect(climbCycle(0.4 + 1.4, timing).progress).toBeCloseTo(0.5, 5);
+    expect(climbCycle(0.4 + 2.8, timing).progress).toBe(1);
+    expect(climbCycle(0.4 + 2.8 + 1.0, timing)).toEqual({ progress: 1, strength: 1 });
+  });
+
+  it('fades out at the end of the cycle and starts over', () => {
+    const fading = climbCycle(0.4 + 2.8 + 1.5 + 0.25, timing);
+    expect(fading.progress).toBe(1);
+    expect(fading.strength).toBeCloseTo(0.5, 5);
+    const period = 2.8 + 1.5 + 0.5;
+    expect(climbCycle(0.4 + period + 1.4, timing).progress).toBeCloseTo(0.5, 5);
+  });
+
+  it('dims the star glow through the strength parameter', () => {
+    const star = starAt(1);
+    const full = dotField(star.x, star.y, 1, 0, 1);
+    const dim = dotField(star.x, star.y, 1, 0, 0);
+    expect(dim.warmth).toBe(0);
+    expect(dim.alpha).toBeLessThan(full.alpha);
   });
 });
