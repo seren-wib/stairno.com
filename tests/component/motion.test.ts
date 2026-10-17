@@ -1,0 +1,101 @@
+import { experimental_AstroContainer as AstroContainer } from 'astro/container';
+import { parse } from 'node-html-parser';
+import { describe, expect, it } from 'vitest';
+import Footer from '../../src/components/Footer.astro';
+import Header from '../../src/components/Header.astro';
+import Hero from '../../src/components/Hero.astro';
+import Projects from '../../src/components/Projects.astro';
+import { projects } from '../../src/data/projects';
+import { locales, t } from '../../src/i18n';
+
+async function render(
+  component: Parameters<AstroContainer['renderToString']>[0],
+  props: Record<string, unknown>,
+) {
+  const container = await AstroContainer.create();
+  return parse(await container.renderToString(component, { props }));
+}
+
+describe('Projects slider', () => {
+  it.each(locales)(
+    'FR-6 renders one slide per project, each with its link, in %s',
+    async (locale) => {
+      const root = await render(Projects, { locale });
+      const slider = root.querySelector('[data-slider]');
+      expect(slider).not.toBeNull();
+      const slides = root.querySelectorAll('[data-slide]');
+      expect(slides).toHaveLength(projects.length);
+      for (const [index, slide] of slides.entries()) {
+        const link = slide.querySelector('a[target="_blank"]');
+        expect(link?.getAttribute('href')).toBe(projects[index]?.url);
+        expect(slide.text).toContain(projects[index]?.name[locale]);
+      }
+    },
+  );
+
+  it.each(locales)(
+    'FR-6 has previous, next and one labelled dot per project in %s',
+    async (locale) => {
+      const root = await render(Projects, { locale });
+      const copy = t(locale).projects;
+      expect(root.querySelector('button[data-slider-prev]')?.getAttribute('aria-label')).toBe(
+        copy.previous,
+      );
+      expect(root.querySelector('button[data-slider-next]')?.getAttribute('aria-label')).toBe(
+        copy.next,
+      );
+      const dots = root.querySelectorAll('button[data-slider-dot]');
+      expect(dots).toHaveLength(projects.length);
+      expect(dots[0]?.getAttribute('aria-label')).toBe(
+        copy.goTo.replace('{name}', projects[0]!.name[locale]),
+      );
+    },
+  );
+
+  it('plays automatically with a declared interval and pauses on hover', async () => {
+    const root = await render(Projects, { locale: 'ko' });
+    const slider = root.querySelector('[data-slider]');
+    expect(Number(slider?.getAttribute('data-interval'))).toBeGreaterThanOrEqual(4000);
+    expect(slider?.getAttribute('aria-roledescription')).toBe('carousel');
+  });
+
+  it('exposes exactly three new-tab links so the external link count stays at three', async () => {
+    const root = await render(Projects, { locale: 'en' });
+    expect(root.querySelectorAll('a[target="_blank"]')).toHaveLength(3);
+  });
+});
+
+describe('Header', () => {
+  it('FR-4 is marked sticky so the script can solidify it on scroll', async () => {
+    const root = await render(Header, { locale: 'ko' });
+    expect(root.querySelector('header[data-sticky]')).not.toBeNull();
+  });
+});
+
+describe('scroll reveal', () => {
+  it('marks hero copy with staggered reveal targets', async () => {
+    const root = await render(Hero, { locale: 'ko' });
+    const targets = root.querySelectorAll('[data-reveal]');
+    expect(targets.length).toBeGreaterThanOrEqual(3);
+  });
+
+  it('marks the projects heading as a reveal target', async () => {
+    const root = await render(Projects, { locale: 'ko' });
+    expect(root.querySelector('h2[data-reveal]')).not.toBeNull();
+  });
+});
+
+describe('Footer', () => {
+  it.each(locales)(
+    'FR-9 links to every project in the same tab plus the source in %s',
+    async (locale) => {
+      const root = await render(Footer, { locale });
+      for (const project of projects) {
+        const link = root.querySelector(`a[href="${project.url}"]`);
+        expect(link?.text.trim()).toBe(project.name[locale]);
+        expect(link?.getAttribute('target')).toBeNull();
+      }
+      expect(root.text).toContain(t(locale).footer.projects);
+    },
+  );
+});
