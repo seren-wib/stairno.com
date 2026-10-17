@@ -27,7 +27,16 @@ const sections = [
       <ul class="site-menu" data-menu>
         {sections.map((item) => (
           <li>
-            <a href={item.href}>{item.label}</a>
+            <a href={item.href}>
+              <span
+                data-dot-text
+                data-dot-trigger="current"
+                data-dot-spacing="2.4"
+                data-dot-color="star"
+              >
+                {item.label}
+              </span>
+            </a>
           </li>
         ))}
       </ul>
