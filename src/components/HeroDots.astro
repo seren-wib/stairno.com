@@ -15,10 +15,15 @@
   const INTRO = { delay: 0.15, spread: 0.9 }; // per-dot delays spread across this many seconds
   const INTRO_END = INTRO.delay + INTRO.spread + 1;
   const TIMING = { delay: INTRO_END, climb: 2.8, hold: 1.6, fade: 0.6 };
-  // On narrow canvases the staircase gets the right 70% instead of 48%.
+  // On narrow canvases the staircase gets the right 70% instead of 48% and
+  // sits in the lower half, under the copy.
   function fieldX(u: number, narrow: boolean): number {
     if (!narrow) return u;
     return u < 0.3 ? (u / 0.3) * 0.52 : 0.52 + ((u - 0.3) / 0.7) * 0.48;
+  }
+  function fieldY(u: number, narrow: boolean): number {
+    if (!narrow) return u;
+    return u < 0.5 ? u * 0.6 : 0.3 + ((u - 0.5) / 0.5) * 0.7;
   }
 
   const YELLOW = { r: 255, g: 209, b: 102 };
@@ -114,7 +119,7 @@
           const fy = row * SPACING + SPACING / 2;
           const dot = dotField(
             fieldX(fx / width, narrow),
-            fy / height,
+            fieldY(fy / height, narrow),
             cycle.progress,
             seconds,
             cycle.strength,
