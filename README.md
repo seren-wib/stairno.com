@@ -109,7 +109,7 @@ A few details:
 - **Both dictionaries share one type.** A key missing from `ko` or `en` fails `astro check`; an empty string fails a unit test.
 - **The inline theme script is tested against the TypeScript logic.** The integration suite runs the built `<script>` with fake storage and `matchMedia` and compares it with `resolveTheme`.
 - **The hub never grows commerce.** A built-output test fails if a form, an input, or intake and payment wording appears.
-- **One accent colour, seven tokens, two themes.** Tokens are declared on `html[data-theme]`, so switching is one attribute.
+- **Night sky, one star, two themes.** The hero, contact band and footer always use the night palette; body tokens are declared on `html[data-theme]`, so switching is one attribute.
 
 The design documents (plan, requirements, design, test and deploy) live in Google Docs; [CLAUDE.md](CLAUDE.md) lists them and the rules that follow from them.
 
