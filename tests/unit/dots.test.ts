@@ -6,6 +6,7 @@ import {
   climbCycle,
   dotField,
   dotsFromMask,
+  ripple,
   stairTop,
   starAt,
 } from '../../src/lib/dots';
@@ -160,5 +161,25 @@ describe('burst', () => {
     expect(peak).toBeGreaterThan(1.1);
     expect(burst(0.9)).toBeGreaterThan(1);
     expect(burst(0.9)).toBeLessThan(peak);
+  });
+});
+
+describe('ripple', () => {
+  const wave = { speed: 900, width: 90, life: 1.4 };
+
+  it('is strongest on the expanding ring and zero far from it', () => {
+    const age = 0.3;
+    const ring = wave.speed * age;
+    expect(ripple(ring, age, wave)).toBeGreaterThan(0.6);
+    expect(ripple(ring + 600, age, wave)).toBeLessThan(0.01);
+    expect(ripple(0, age, wave)).toBeLessThan(0.05);
+  });
+
+  it('fades out over its life and never goes negative', () => {
+    const early = ripple(wave.speed * 0.1, 0.1, wave);
+    const late = ripple(wave.speed * 1.2, 1.2, wave);
+    expect(late).toBeLessThan(early);
+    expect(ripple(wave.speed * 2, 2, wave)).toBe(0);
+    expect(ripple(123, -1, wave)).toBe(0);
   });
 });
