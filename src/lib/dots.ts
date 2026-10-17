@@ -149,11 +149,25 @@ export function dotsFromMask(
   spacing: number,
 ): MaskPoint[] {
   const points: MaskPoint[] = [];
+  const reach = Math.max(0, spacing / 3);
+  const at = (x: number, y: number) => {
+    const px = Math.min(width - 1, Math.max(0, Math.floor(x)));
+    const py = Math.min(height - 1, Math.max(0, Math.floor(y)));
+    return alpha[py * width + px] ?? 0;
+  };
   for (let x = spacing / 2; x < width; x += spacing) {
     for (let y = spacing / 2; y < height; y += spacing) {
+      // Thin strokes slip between cell centres, so look at a small cross too.
+      const coverage = Math.max(
+        at(x, y),
+        at(x - reach, y),
+        at(x + reach, y),
+        at(x, y - reach),
+        at(x, y + reach),
+      );
+      if (coverage < 96) continue;
       const px = Math.min(width - 1, Math.floor(x));
       const py = Math.min(height - 1, Math.floor(y));
-      if ((alpha[py * width + px] ?? 0) < 128) continue;
       const seed = py * width + px;
       points.push({
         x,

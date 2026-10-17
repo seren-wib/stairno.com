@@ -40,6 +40,8 @@ export type DotTextOptions = {
   trigger: 'always' | 'visible' | 'current';
   // seconds over which per-dot delays are spread
   spread?: number;
+  // 'keep': stay as dots. 'reveal': once settled, fade the dots out and the real text in.
+  settle?: 'keep' | 'reveal';
 };
 
 export function mountDotText(el: HTMLElement, options: DotTextOptions): void {
@@ -86,33 +88,47 @@ export function mountDotText(el: HTMLElement, options: DotTextOptions): void {
       const py = cy + (point.y + point.sy * (1 - p) - cy) * scale;
       context!.globalAlpha = grow;
       context!.beginPath();
-      context!.arc(px, py, options.spacing * 0.42 * grow, 0, Math.PI * 2);
+      context!.arc(px, py, options.spacing * 0.55 * grow, 0, Math.PI * 2);
       context!.fill();
     }
     context!.globalAlpha = 1;
     return settled;
   }
 
+  function finish(): void {
+    if (options.settle === 'reveal') {
+      el.classList.add('is-settled');
+      canvas.style.opacity = '0';
+    }
+  }
+
   function loop(now: number): void {
     const settled = draw((now - start) / 1000);
     if (!settled) frame = requestAnimationFrame(loop);
+    else finish();
   }
 
   function show(): void {
     if (active) return;
     active = true;
+    el.classList.remove('is-settled');
+    canvas.style.opacity = '1';
     el.classList.add('is-dots');
     resample();
     cancelAnimationFrame(frame);
     start = performance.now();
-    if (reduceMotion) draw(0);
-    else frame = requestAnimationFrame(loop);
+    if (reduceMotion) {
+      draw(0);
+      finish();
+    } else {
+      frame = requestAnimationFrame(loop);
+    }
   }
 
   function hide(): void {
     if (!active) return;
     active = false;
-    el.classList.remove('is-dots');
+    el.classList.remove('is-dots', 'is-settled');
     cancelAnimationFrame(frame);
     context!.clearRect(0, 0, sample.width, sample.height);
   }
