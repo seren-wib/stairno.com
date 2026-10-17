@@ -6,11 +6,10 @@
 <canvas class="hero-dots" data-hero-dots aria-hidden="true"></canvas>
 
 <script>
-  import { dotField } from '../lib/dots';
+  import { climbCycle, dotField } from '../lib/dots';
 
   const SPACING = 14;
-  const CLIMB_SECONDS = 2.8;
-  const CLIMB_DELAY = 0.4;
+  const TIMING = { delay: 0.4, climb: 2.8, hold: 1.6, fade: 0.6 };
   const YELLOW = { r: 255, g: 209, b: 102 };
   const HOT = { r: 255, g: 247, b: 224 };
 
@@ -36,9 +35,7 @@
 
     function draw(now: number): void {
       const seconds = (now - start) / 1000;
-      const progress = reduceMotion
-        ? 1
-        : Math.min(1, Math.max(0, (seconds - CLIMB_DELAY) / CLIMB_SECONDS));
+      const cycle = reduceMotion ? { progress: 1, strength: 1 } : climbCycle(seconds, TIMING);
       context!.clearRect(0, 0, width, height);
       const cols = Math.ceil(width / SPACING);
       const rows = Math.ceil(height / SPACING);
@@ -46,7 +43,13 @@
         for (let col = 0; col <= cols; col++) {
           const px = col * SPACING + SPACING / 2;
           const py = row * SPACING + SPACING / 2;
-          const dot = dotField(px / width, py / height, progress, reduceMotion ? 0 : seconds);
+          const dot = dotField(
+            px / width,
+            py / height,
+            cycle.progress,
+            reduceMotion ? 0 : seconds,
+            cycle.strength,
+          );
           const r = Math.round(YELLOW.r + (HOT.r - YELLOW.r) * dot.warmth);
           const g = Math.round(YELLOW.g + (HOT.g - YELLOW.g) * dot.warmth);
           const b = Math.round(YELLOW.b + (HOT.b - YELLOW.b) * dot.warmth);
@@ -80,7 +83,7 @@
       if (document.hidden) {
         cancelAnimationFrame(frame);
       } else {
-        start = performance.now() - (CLIMB_DELAY + CLIMB_SECONDS) * 1000;
+        start = performance.now();
         frame = requestAnimationFrame(loop);
       }
     });
