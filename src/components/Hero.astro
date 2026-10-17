@@ -11,7 +11,8 @@ const { locale } = Astro.props;
 const copy = t(locale).hero;
 ---
 
-<section class="hero" aria-labelledby="hero-title">
+<section class="hero" aria-labelledby="hero-title" data-screen>
+  <div class="hero-veil" aria-hidden="true"></div>
   <HeroDots />
   <div class="container hero-inner">
     <p class="hero-tagline" data-reveal="1">

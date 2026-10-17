@@ -1,8 +1,9 @@
 ---
 // Decorative halftone canvas behind the hero copy. Draws nothing until the
 // script runs, so the hero is a plain night gradient without JavaScript.
-// On load the staircase and the wordmark burst out from the centre and
-// assemble into place; afterwards the star climbs on a loop. SDD 4.2, 4.6.
+// On load the whole picture sits on a dotted globe that turns in 3D, then
+// unwraps flat into the staircase and the wordmark; afterwards the star
+// climbs on a loop. SDD 4.2, 4.6.
 ---
 
 <canvas class="hero-dots" data-hero-dots aria-hidden="true"></canvas>
@@ -10,7 +11,6 @@
 <script>
   import {
     assemble,
-    burst,
     climbCycle,
     dotField,
     dotsFromMask,
@@ -20,14 +20,43 @@
 
   const SPACING = 14;
   const LETTER_SPACING = 6;
-  // The whole picture bursts out of the dark from the canvas centre: every
-  // dot (sky, staircase, star, letters) flies past its place and settles.
-  // Dots further from the centre start later, so it reads as a wave.
-  const INTRO = { delay: 0.2, spread: 0.9, settle: 1.5 };
-  const INTRO_END = INTRO.delay + INTRO.spread + INTRO.settle;
-  const settleAt = (seconds: number, delay: number) =>
-    assemble(seconds / INTRO.settle, delay / INTRO.settle);
+  // Globe intro: the flat picture is wrapped onto a sphere that spins into
+  // view over `spin` seconds; from `unfoldAt` the dots peel off the sphere
+  // to their flat places over `unfold` seconds, centre first (`spread`).
+  const INTRO = { spin: 2.0, unfoldAt: 1.2, unfold: 1.5, spread: 0.5 };
+  const INTRO_END = INTRO.unfoldAt + INTRO.spread + INTRO.unfold;
   const TIMING = { delay: INTRO_END, climb: 2.8, hold: 1.6, fade: 0.6 };
+  // How much of the sphere the picture covers: longitude span and latitude span.
+  const LON_SPAN = Math.PI * 1.7;
+  const LAT_SPAN = Math.PI * 0.95;
+  const START_ANGLE = -1.4; // radians the globe still has to turn at t = 0
+
+  const easeOut = (t: number) => 1 - (1 - Math.min(1, Math.max(0, t))) ** 3;
+
+  type Globe = { x: number; y: number; depth: number; persp: number; lon: number };
+
+  // Where the flat point (fx, fy) sits on the globe turned by `theta`.
+  function onGlobe(
+    fx: number,
+    fy: number,
+    w: number,
+    h: number,
+    cx: number,
+    cy: number,
+    R: number,
+    theta: number,
+  ): Globe {
+    const lon = (fx / w - 0.5) * LON_SPAN;
+    const lat = (fy / h - 0.5) * LAT_SPAN;
+    const cl = Math.cos(lat);
+    const x3 = R * cl * Math.sin(lon + theta);
+    const y3 = R * Math.sin(lat);
+    const z3 = R * cl * Math.cos(lon + theta); // towards the viewer
+    const depth = (z3 / R + 1) / 2; // 0 = far side, 1 = nearest
+    const persp = 0.78 + 0.32 * depth;
+    return { x: cx + x3 * persp, y: cy + y3 * persp, depth, persp, lon };
+  }
+
   // On narrow canvases the staircase gets the right 70% instead of 48% and
   // sits in the lower half, under the copy.
   function fieldX(u: number, narrow: boolean): number {
@@ -43,8 +72,9 @@
   const WAVE = { speed: 900, width: 90, life: 1.4 };
   const PUSH = 22;
 
-  const YELLOW = { r: 255, g: 209, b: 102 };
-  const HOT = { r: 255, g: 247, b: 224 };
+  // Dots are light grey; the star burns white.
+  const YELLOW = { r: 214, g: 214, b: 214 };
+  const HOT = { r: 255, g: 255, b: 255 };
 
   function colour(warmth: number, alpha: number): string {
     const r = Math.round(YELLOW.r + (HOT.r - YELLOW.r) * warmth);
@@ -69,8 +99,8 @@
   function wordmarkPoints(hero: HTMLElement, wordmark: HTMLElement): MaskPoint[] {
     const style = getComputedStyle(wordmark);
     const size = parseFloat(style.fontSize);
-    const width = Math.ceil(wordmark.offsetWidth) + LETTER_SPACING;
-    const height = Math.ceil(wordmark.offsetHeight) + LETTER_SPACING;
+    const width = Math.ceil(wordmark.offsetWidth + LETTER_SPACING);
+    const height = Math.ceil(wordmark.offsetHeight + LETTER_SPACING);
     if (width <= 0 || height <= 0) return [];
     const off = document.createElement('canvas');
     off.width = width;
@@ -80,9 +110,12 @@
     ctx.font = `${style.fontWeight} ${size}px ${style.fontFamily}`;
     ctx.textBaseline = 'alphabetic';
     ctx.fillStyle = '#fff';
-    // The baseline sits about 0.8em below the top of the line box for this face.
+    const text = wordmark.textContent?.trim() ?? '';
+    const metrics = ctx.measureText(text);
+    const ascent = metrics.fontBoundingBoxAscent || size * 0.8;
+    const descent = metrics.fontBoundingBoxDescent || size * 0.2;
     const lineHeight = parseFloat(style.lineHeight) || size;
-    ctx.fillText(wordmark.textContent?.trim() ?? '', 0, (lineHeight - size) / 2 + size * 0.8);
+    ctx.fillText(text, 0, (lineHeight - (ascent + descent)) / 2 + ascent);
     const data = ctx.getImageData(0, 0, width, height).data;
     const alpha = new Uint8ClampedArray(width * height);
     for (let i = 0; i < width * height; i++) alpha[i] = data[i * 4 + 3] ?? 0;
@@ -138,13 +171,21 @@
       hero!.classList.toggle('has-dots', letters.length > 0);
     }
 
+    // 0 while still on the globe, 1 once flat; centre of the picture first.
+    function unfolded(seconds: number, lon: number): number {
+      const delay = INTRO.unfoldAt + (Math.abs(lon) / (LON_SPAN / 2)) * INTRO.spread;
+      return assemble(seconds / INTRO.unfold, delay / INTRO.unfold);
+    }
+
     function draw(now: number): void {
       const seconds = reduceMotion ? 1e9 : (now - start) / 1000;
       const cycle = reduceMotion ? { progress: 1, strength: 1 } : climbCycle(seconds, TIMING);
       const narrow = width < height;
       const cx = width / 2;
       const cy = height / 2;
-      const maxDist = Math.hypot(cx, cy) || 1;
+      const R = Math.min(width, height) * 0.4;
+      const theta = START_ANGLE * (1 - easeOut(seconds / INTRO.spin));
+      const intro = seconds < INTRO_END;
       context!.clearRect(0, 0, width, height);
 
       // Background and staircase on the coarse grid.
@@ -161,37 +202,49 @@
             seconds,
             cycle.strength,
           );
-          const dist = Math.hypot(fx - cx, fy - cy) / maxDist;
-          const p = settleAt(seconds, INTRO.delay + dist * INTRO.spread);
-          if (p <= 0) continue;
-          const scale = burst(p);
-          const [nx, ny, k] = ripples.length ? nudge(fx, fy, now) : [0, 0, 0];
-          const px = cx + (fx - cx) * scale + nx;
-          const py = cy + (fy - cy) * scale + ny;
-          const grow = Math.min(1, 0.2 + p);
+          let px = fx;
+          let py = fy;
+          let alpha = dot.alpha;
+          let radius = dot.radius * SPACING;
+          if (intro) {
+            const g = onGlobe(fx, fy, width, height, cx, cy, R, theta);
+            const u = unfolded(seconds, g.lon);
+            px = g.x + (fx - g.x) * u;
+            py = g.y + (fy - g.y) * u;
+            const shade = 0.06 + 0.94 * g.depth ** 2; // far side of the globe fades almost out
+            alpha = dot.alpha * (shade + (1 - shade) * u);
+            radius = dot.radius * SPACING * (g.persp + (1 - g.persp) * u);
+          }
+          const [nx, ny, k] = ripples.length ? nudge(px, py, now) : [0, 0, 0];
           context!.fillStyle = colour(
             Math.min(1, dot.warmth + k * 0.6),
-            Math.min(1, dot.alpha * grow + k * 0.5),
+            Math.min(1, alpha + k * 0.5),
           );
           context!.beginPath();
-          context!.arc(px, py, dot.radius * SPACING * grow * (1 + k * 1.1), 0, Math.PI * 2);
+          context!.arc(px + nx, py + ny, radius * (1 + k * 1.1), 0, Math.PI * 2);
           context!.fill();
         }
       }
 
       // Wordmark on the fine grid.
       for (const point of letters) {
-        const dist = Math.hypot(point.x - cx, point.y - cy) / maxDist;
-        const p = settleAt(seconds, INTRO.delay + dist * INTRO.spread);
-        if (p <= 0) continue;
-        const scale = burst(p);
-        const grow = Math.min(1, 0.2 + p);
-        const [nx, ny] = ripples.length ? nudge(point.x, point.y, now) : [0, 0];
-        const px = cx + (point.x + point.sx * (1 - p) - cx) * scale + nx;
-        const py = cy + (point.y + point.sy * (1 - p) - cy) * scale + ny;
-        context!.fillStyle = `rgba(255, 255, 255, ${(0.96 * grow).toFixed(3)})`;
+        let px = point.x;
+        let py = point.y;
+        let alpha = 0.96;
+        let radius = LETTER_SPACING * 0.42;
+        if (intro) {
+          const g = onGlobe(point.x, point.y, width, height, cx, cy, R, theta);
+          const u = unfolded(seconds, g.lon);
+          px = g.x + (point.x - g.x) * u;
+          py = g.y + (point.y - g.y) * u;
+          const shade = 0.05 + 0.95 * g.depth ** 2;
+          alpha = 0.96 * (shade + (1 - shade) * u);
+          radius = LETTER_SPACING * 0.42 * (g.persp + (1 - g.persp) * u);
+        }
+        const [nx, ny] = ripples.length ? nudge(px, py, now) : [0, 0];
+        context!.fillStyle = `rgba(255, 255, 255, ${alpha.toFixed(3)})`;
         context!.beginPath();
-        context!.arc(px, py, LETTER_SPACING * 0.42 * grow, 0, Math.PI * 2);
+        context!.arc(px + nx, py + ny, radius, 0, Math.PI * 2);
         context!.fill();
       }
     }
@@ -230,12 +283,16 @@
       if (reduceMotion) draw(performance.now());
     }).observe(canvas);
 
+    // Pause while hidden without skipping ahead: the clock stops with the tab.
+    let pausedAt = 0;
     document.addEventListener('visibilitychange', () => {
       if (reduceMotion) return;
       if (document.hidden) {
+        pausedAt = performance.now();
         cancelAnimationFrame(frame);
       } else {
-        start = performance.now() - INTRO_END * 1000;
+        if (pausedAt) start += performance.now() - pausedAt;
+        pausedAt = 0;
         frame = requestAnimationFrame(loop);
       }
     });

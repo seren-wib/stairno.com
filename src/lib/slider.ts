@@ -1,107 +1,90 @@
-// Auto-advancing slider. Pure DOM, no dependencies. SDD 4.6.
+// One card per scroll. The projects section fills the screen; while it is
+// pinned, the page-scroll gesture (src/lib/screens.ts) turns one card instead
+// of moving the page. Past the last card (or before the first) the gesture
+// falls through and the page moves on. Pure DOM, no dependencies. SDD 4.6.
 //
 // Markup contract (see Projects.astro):
-//   [data-slider][data-interval]  root
-//     [data-slides] > [data-slide]*  one slide per project
+//   [data-slider]                     the section (pinned when its top is at 0)
+//     [data-slides] > [data-slide]*   one slide per project
 //     button[data-slider-dot][data-index]*
-//     button[data-slider-prev], button[data-slider-next]
 
-export function wrapIndex(index: number, length: number): number {
-  if (length <= 0) return 0;
-  return ((index % length) + length) % length;
+export type Flip = 'next' | 'prev' | 'pass';
+
+// Deltas smaller than this are the tail of a trackpad gesture, not a new one.
+const MIN_DELTA = 4;
+// px tolerance for "the section sits at the top of the viewport"
+const PINNED = 2;
+
+export function clampIndex(index: number, count: number): number {
+  if (count <= 0) return 0;
+  return Math.min(count - 1, Math.max(0, index));
 }
 
-export function createSlider(root: HTMLElement): { go(index: number): void; stop(): void } {
+// What a scroll of `deltaY` (positive = down) does on card `current`.
+export function flipFor(deltaY: number, current: number, count: number): Flip {
+  if (count < 2 || Math.abs(deltaY) < MIN_DELTA) return 'pass';
+  if (deltaY > 0) return current < count - 1 ? 'next' : 'pass';
+  return current > 0 ? 'prev' : 'pass';
+}
+
+export function createSlider(root: HTMLElement): {
+  go(index: number): void;
+  current(): number;
+  consume(direction: 1 | -1): boolean;
+} {
+  const track = root.querySelector<HTMLElement>('[data-slides]');
   const slides = Array.from(root.querySelectorAll<HTMLElement>('[data-slide]'));
   const dots = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-slider-dot]'));
-  const prev = root.querySelector<HTMLButtonElement>('[data-slider-prev]');
-  const next = root.querySelector<HTMLButtonElement>('[data-slider-next]');
-  const track = root.querySelector<HTMLElement>('[data-slides]');
-  const interval = Number(root.dataset.interval) || 5000;
-  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const count = slides.length;
 
   let current = 0;
-  let timer: number | undefined;
 
   function render(): void {
-    if (track) track.style.transform = `translateX(-${current * 100}%)`;
-    slides.forEach((slide, index) => {
-      slide.setAttribute('aria-hidden', index === current ? 'false' : 'true');
-      slide.classList.toggle('is-active', index === current);
+    if (track) track.style.transform = `translateX(${-current * 100}%)`;
+    slides.forEach((slide, i) => {
+      slide.setAttribute('aria-hidden', i === current ? 'false' : 'true');
+      slide.classList.toggle('is-active', i === current);
+      if (i === current) slide.removeAttribute('inert');
+      else slide.setAttribute('inert', '');
     });
-    dots.forEach((dot, index) => {
-      dot.setAttribute('aria-selected', index === current ? 'true' : 'false');
-      dot.classList.toggle('is-active', index === current);
+    dots.forEach((dot, i) => {
+      dot.setAttribute('aria-selected', i === current ? 'true' : 'false');
+      dot.classList.toggle('is-active', i === current);
     });
   }
 
   function go(index: number): void {
-    current = wrapIndex(index, slides.length);
+    const next = clampIndex(index, count);
+    if (next === current) return;
+    current = next;
     render();
   }
 
-  function stop(): void {
-    if (timer !== undefined) {
-      clearInterval(timer);
-      timer = undefined;
-    }
+  function pinned(): boolean {
+    return Math.abs(root.getBoundingClientRect().top) <= PINNED;
   }
 
-  function play(): void {
-    if (reduceMotion || slides.length < 2 || timer !== undefined) return;
-    timer = window.setInterval(() => go(current + 1), interval);
+  function apply(flip: Flip): void {
+    if (flip === 'next') go(current + 1);
+    else if (flip === 'prev') go(current - 1);
   }
 
-  function restart(): void {
-    stop();
-    play();
+  // Gate for the page scroll: while the section is pinned, a downward gesture
+  // turns to the next card and an upward one to the previous; past either end
+  // the gesture is left to the page.
+  function consume(direction: 1 | -1): boolean {
+    if (!pinned()) return false;
+    const flip = flipFor(direction * 100, current, count);
+    if (flip === 'pass') return false;
+    apply(flip);
+    return true;
   }
 
   dots.forEach((dot) => {
-    dot.addEventListener('click', () => {
-      go(Number(dot.dataset.index));
-      restart();
-    });
-  });
-  prev?.addEventListener('click', () => {
-    go(current - 1);
-    restart();
-  });
-  next?.addEventListener('click', () => {
-    go(current + 1);
-    restart();
-  });
-
-  // Start from the first slide whenever the slider scrolls into view, so a
-  // visitor always sees 1 → 2 → 3; stop while it is off screen.
-  if ('IntersectionObserver' in window) {
-    stop();
-    new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            go(0);
-            restart();
-          } else {
-            stop();
-          }
-        }
-      },
-      { threshold: 0.4 },
-    ).observe(root);
-  }
-
-  root.addEventListener('mouseenter', stop);
-  root.addEventListener('mouseleave', play);
-  root.addEventListener('focusin', stop);
-  root.addEventListener('focusout', play);
-  document.addEventListener('visibilitychange', () => {
-    if (document.hidden) stop();
-    else play();
+    dot.addEventListener('click', () => go(Number(dot.dataset.index)));
   });
 
   render();
-  if (!('IntersectionObserver' in window)) play();
 
-  return { go, stop };
+  return { go, current: () => current, consume };
 }

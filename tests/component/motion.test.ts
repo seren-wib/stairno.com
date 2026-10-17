@@ -50,11 +50,14 @@ describe('Projects slider', () => {
     },
   );
 
-  it('plays automatically with a declared interval and pauses on hover', async () => {
+  it('has no timer and keeps every card but the first out of the tab order', async () => {
     const root = await render(Projects, { locale: 'ko' });
     const slider = root.querySelector('[data-slider]');
-    expect(Number(slider?.getAttribute('data-interval'))).toBeGreaterThanOrEqual(4000);
+    expect(slider?.hasAttribute('data-interval')).toBe(false);
     expect(slider?.getAttribute('aria-roledescription')).toBe('carousel');
+    const slides = root.querySelectorAll('[data-slide]');
+    expect(slides[0]?.hasAttribute('inert')).toBe(false);
+    expect(slides.slice(1).every((slide) => slide.hasAttribute('inert'))).toBe(true);
   });
 
   it('exposes exactly three new-tab links so the external link count stays at three', async () => {
