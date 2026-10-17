@@ -1,6 +1,7 @@
 ---
 import { site } from '../data/site';
 import { t, type Locale } from '../i18n';
+import HeroDots from './HeroDots.astro';
 
 interface Props {
   locale: Locale;
@@ -11,6 +12,7 @@ const copy = t(locale).hero;
 ---
 
 <section class="hero" aria-labelledby="hero-title">
+  <HeroDots />
   <div class="container hero-inner">
     <p class="hero-tagline" data-reveal="1">
       {copy.tagline}
@@ -24,12 +26,5 @@ const copy = t(locale).hero;
     <p class="hero-etymology" data-reveal="4">
       {copy.etymology}
     </p>
-  </div>
-  <div class="hero-art" aria-hidden="true">
-    <span class="step s1"></span>
-    <span class="step s2"></span>
-    <span class="step s3"></span>
-    <span class="step s4"></span>
-    <span class="star"></span>
   </div>
 </section>

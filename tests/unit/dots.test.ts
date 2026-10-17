@@ -50,6 +50,11 @@ describe('dotField', () => {
     expect(near.alpha).toBeGreaterThan(far.alpha);
   });
 
+  it('treats samples just outside the field as sky, never as a step', () => {
+    expect(() => dotField(1.02, 1.01, 1, 0)).not.toThrow();
+    expect(dotField(1.02, 1.01, 1, 0).alpha).toBeLessThan(0.2);
+  });
+
   it('keeps every value in range', () => {
     for (let x = 0; x <= 1; x += 0.1) {
       for (let y = 0; y <= 1; y += 0.1) {
