@@ -146,3 +146,14 @@ describe('assemble', () => {
     expect(mid).toBeLessThan(1);
   });
 });
+
+describe('burst', () => {
+  it('starts at the centre, overshoots past the target, then settles on it', () => {
+    expect(burst(0)).toBe(0);
+    expect(burst(1)).toBe(1);
+    const peak = Math.max(...[0.3, 0.4, 0.5, 0.6, 0.7].map(burst));
+    expect(peak).toBeGreaterThan(1.1);
+    expect(burst(0.9)).toBeGreaterThan(1);
+    expect(burst(0.9)).toBeLessThan(peak);
+  });
+});
