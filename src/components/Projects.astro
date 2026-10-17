@@ -15,7 +15,7 @@ const INTERVAL = 5000;
 <section id="projects" class="section projects" aria-labelledby="projects-title">
   <div class="container">
     <h2 id="projects-title" data-reveal>
-      <span data-dot-text data-dot-trigger="visible" data-dot-spacing="2.5">
+      <span data-dot-text data-dot-trigger="visible" data-dot-spacing="2.5" data-dot-radius="0.4">
         {copy.heading}
       </span>
     </h2>
@@ -57,32 +57,6 @@ const INTERVAL = 5000;
             aria-label={copy.goTo.replace('{name}', project.name[locale])}
           />
         ))}
-      </div>
-      <div class="arrows">
-        <button type="button" class="arrow" data-slider-prev aria-label={copy.previous}>
-          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
-            <path
-              d="M15 5l-7 7 7 7"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2.2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            ></path>
-          </svg>
-        </button>
-        <button type="button" class="arrow" data-slider-next aria-label={copy.next}>
-          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
-            <path
-              d="M9 5l7 7-7 7"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2.2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            ></path>
-          </svg>
-        </button>
       </div>
     </div>
   </div>

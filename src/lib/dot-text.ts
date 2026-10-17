@@ -23,9 +23,14 @@ export function sampleText(el: HTMLElement, spacing: number): Sample {
   ctx.font = `${style.fontWeight} ${size}px ${style.fontFamily}`;
   ctx.textBaseline = 'alphabetic';
   ctx.fillStyle = '#fff';
-  // The baseline sits about 0.8em below the top of the line box for this face.
+  // Place the baseline where the browser does: centre the font box in the line box.
+  const text = el.textContent?.trim() ?? '';
+  const metrics = ctx.measureText(text);
+  const ascent = metrics.fontBoundingBoxAscent || size * 0.8;
+  const descent = metrics.fontBoundingBoxDescent || size * 0.2;
   const lineHeight = parseFloat(style.lineHeight) || size;
-  ctx.fillText(el.textContent?.trim() ?? '', 0, (lineHeight - size) / 2 + size * 0.8);
+  const baseline = (lineHeight - (ascent + descent)) / 2 + ascent + spacing / 2;
+  ctx.fillText(text, spacing / 2, baseline);
   const data = ctx.getImageData(0, 0, width, height).data;
   const alpha = new Uint8ClampedArray(width * height);
   for (let i = 0; i < width * height; i++) alpha[i] = data[i * 4 + 3] ?? 0;
@@ -42,6 +47,8 @@ export type DotTextOptions = {
   spread?: number;
   // 'keep': stay as dots. 'reveal': once settled, fade the dots out and the real text in.
   settle?: 'keep' | 'reveal';
+  // dot radius as a fraction of the spacing (0.5 = dots touch)
+  radius?: number;
 };
 
 export function mountDotText(el: HTMLElement, options: DotTextOptions): void {
@@ -54,6 +61,7 @@ export function mountDotText(el: HTMLElement, options: DotTextOptions): void {
   const context = canvas.getContext('2d');
   if (!context) return;
   const spread = options.spread ?? 0.5;
+  const radius = options.radius ?? 0.45;
 
   let sample: Sample = { points: [], width: 0, height: 0 };
   let dpr = 1;
@@ -88,7 +96,7 @@ export function mountDotText(el: HTMLElement, options: DotTextOptions): void {
       const py = cy + (point.y + point.sy * (1 - p) - cy) * scale;
       context!.globalAlpha = grow;
       context!.beginPath();
-      context!.arc(px, py, options.spacing * 0.55 * grow, 0, Math.PI * 2);
+      context!.arc(px, py, options.spacing * radius * grow, 0, Math.PI * 2);
       context!.fill();
     }
     context!.globalAlpha = 1;

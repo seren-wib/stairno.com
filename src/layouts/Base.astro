@@ -81,7 +81,8 @@ const fontHref =
             : () =>
                 getComputedStyle(el).getPropertyValue('--dot-text-color').trim() || 'currentColor';
         const settle = el.dataset.dotSettle === 'reveal' ? 'reveal' : 'keep';
-        mountDotText(el, { spacing, color, trigger, settle });
+        const radius = Number(el.dataset.dotRadius) || 0.45;
+        mountDotText(el, { spacing, color, trigger, settle, radius });
       }
     </script>
     <script>
