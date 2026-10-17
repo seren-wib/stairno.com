@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { STEPS, climbCycle, dotField, stairTop, starAt } from '../../src/lib/dots';
+import {
+  STEPS,
+  assemble,
+  climbCycle,
+  dotField,
+  dotsFromMask,
+  stairTop,
+  starAt,
+} from '../../src/lib/dots';
 
 describe('stairTop', () => {
   it('has no staircase on the left part of the field', () => {
@@ -98,5 +106,43 @@ describe('climbCycle', () => {
     const dim = dotField(star.x, star.y, 1, 0, 0);
     expect(dim.warmth).toBe(0);
     expect(dim.alpha).toBeLessThan(full.alpha);
+  });
+});
+
+describe('dotsFromMask', () => {
+  // 4x2 mask sampled every pixel: only the two right-hand cells are filled.
+  const width = 4;
+  const height = 2;
+  const alpha = new Uint8ClampedArray([0, 0, 255, 255, 0, 0, 255, 255]);
+
+  it('keeps one point per filled cell, sorted left to right', () => {
+    const points = dotsFromMask(alpha, width, height, 1);
+    expect(points.map((p) => [p.x, p.y])).toEqual([
+      [2.5, 0.5],
+      [2.5, 1.5],
+      [3.5, 0.5],
+      [3.5, 1.5],
+    ]);
+  });
+
+  it('gives each point a scatter offset and a delay that grows to the right', () => {
+    const points = dotsFromMask(alpha, width, height, 1);
+    expect(points[0]!.delay).toBeLessThanOrEqual(points[points.length - 1]!.delay);
+    for (const p of points) {
+      expect(Math.abs(p.sx)).toBeGreaterThan(0);
+      expect(p.delay).toBeGreaterThanOrEqual(0);
+      expect(p.delay).toBeLessThanOrEqual(1);
+    }
+  });
+});
+
+describe('assemble', () => {
+  it('eases a point from scattered to settled over its window', () => {
+    expect(assemble(0, 0.5)).toBe(0);
+    expect(assemble(0.5, 0.5)).toBe(0);
+    expect(assemble(1.5, 0.5)).toBe(1);
+    const mid = assemble(1.0, 0.5);
+    expect(mid).toBeGreaterThan(0.5);
+    expect(mid).toBeLessThan(1);
   });
 });
