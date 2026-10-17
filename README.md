@@ -109,7 +109,7 @@ A few details:
 - **Both dictionaries share one type.** A key missing from `ko` or `en` fails `astro check`; an empty string fails a unit test.
 - **The inline theme script is tested against the TypeScript logic.** The integration suite runs the built `<script>` with fake storage and `matchMedia` and compares it with `resolveTheme`.
 - **The hub never grows commerce.** A built-output test fails if a form, an input, or intake and payment wording appears.
-- **Projects rotate on their own.** One project per full-width slide, advancing every five seconds; hover, focus or a hidden tab pauses it, and the three step-shaped dots jump directly. The header turns solid once the page scrolls, and section copy rises into view once.
+- **Projects rotate on their own.** One project per full-width slide; the slider restarts from the first slide each time it scrolls into view and advances every five seconds, pausing on hover, focus or a hidden tab. The three step-shaped dots jump directly. Section headings and the current header menu item are drawn as dots that assemble when they appear.
 - **The hero is drawn, not loaded.** A canvas samples a pure dot field (`src/lib/dots.ts`) on a 14px grid: a halftone staircase and a star that hops to the top step on load. No image files ship with the site.
 - **Night sky, one star, two themes.** The hero, contact band and footer always use the night palette; body tokens are declared on `html[data-theme]`, so switching is one attribute.
 
