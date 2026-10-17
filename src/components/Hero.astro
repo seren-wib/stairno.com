@@ -11,8 +11,19 @@ const copy = t(locale).hero;
 ---
 
 <section class="hero" aria-labelledby="hero-title">
-  <p class="eyebrow">{copy.tagline}</p>
-  <h1 id="hero-title">{site.name}</h1>
-  <p class="lead">{copy.intro}</p>
-  <p class="muted">{copy.etymology}</p>
+  <div class="container hero-inner">
+    <p class="hero-tagline">{copy.tagline}</p>
+    <h1 id="hero-title" class="wordmark">
+      {site.name}
+    </h1>
+    <p class="hero-intro">{copy.intro}</p>
+    <p class="hero-etymology">{copy.etymology}</p>
+  </div>
+  <div class="hero-art" aria-hidden="true">
+    <span class="step s1"></span>
+    <span class="step s2"></span>
+    <span class="step s3"></span>
+    <span class="step s4"></span>
+    <span class="star"></span>
+  </div>
 </section>

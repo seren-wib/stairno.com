@@ -11,10 +11,12 @@ const { locale } = Astro.props;
 ---
 
 <section class="section" aria-labelledby="projects-title">
-  <h2 id="projects-title">{t(locale).projects.heading}</h2>
-  <div class="cards">
-    {projects.map((project) => (
-      <ProjectCard project={project} locale={locale} />
-    ))}
+  <div class="container">
+    <h2 id="projects-title">{t(locale).projects.heading}</h2>
+    <div class="steps">
+      {projects.map((project) => (
+        <ProjectCard project={project} locale={locale} />
+      ))}
+    </div>
   </div>
 </section>

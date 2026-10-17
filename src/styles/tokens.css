@@ -1,14 +1,22 @@
-/* Design tokens. Values and contrast ratios: SDD 4.2 to 4.4. */
+/* Design tokens. Rationale and contrast ratios: SDD 4. */
 
 :root {
   --font-sans:
     'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, 'Segoe UI',
     Roboto, 'Helvetica Neue', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
-  --max-width: 720px;
-  --gutter: clamp(1rem, 4vw, 2rem);
-  --section-gap: clamp(3rem, 8vw, 6rem);
-  --radius: 16px;
-  --header-height: 64px;
+  --max-width: 1120px;
+  --gutter: clamp(1.25rem, 4vw, 3rem);
+  --section-gap: clamp(4rem, 10vw, 8rem);
+  --header-height: 72px;
+  --radius: 10px;
+
+  /* Brand constants. The night sky and the star never change with the theme. */
+  --night: #0b1230;
+  --horizon: #1c2d73;
+  --star: #ffd166;
+  --on-night: #ffffff;
+  --on-night-muted: rgba(255, 255, 255, 0.68);
+  --on-night-faint: rgba(255, 255, 255, 0.12);
 }
 
 /* Light is the default so the page is readable even if the theme script never runs. */
@@ -16,21 +24,25 @@
 html[data-theme='light'] {
   color-scheme: light;
   --bg: #ffffff;
-  --bg-elevated: #f5f6f8;
-  --fg: #111318;
-  --fg-muted: #5c6370;
-  --border: #e4e7ec;
-  --accent: #4f6bf6;
-  --accent-fg: #ffffff;
+  --surface: #f1f2f7;
+  --fg: #111426;
+  --fg-muted: #5b6078;
+  --border: #e1e3ec;
+  --link: #2338a8;
+  --step-1: #1b2a6b;
+  --step-2: #24378a;
+  --step-3: #2f47b0;
 }
 
 html[data-theme='dark'] {
   color-scheme: dark;
-  --bg: #0f1115;
-  --bg-elevated: #181b22;
-  --fg: #f2f3f5;
-  --fg-muted: #9aa3b2;
-  --border: #2a2f3a;
-  --accent: #7b8ffc;
-  --accent-fg: #0f1115;
+  --bg: #0b1230;
+  --surface: #141b3d;
+  --fg: #f4f5fa;
+  --fg-muted: #a3a9c4;
+  --border: #273062;
+  --link: #ffd166;
+  --step-1: #1f2d6e;
+  --step-2: #2a3c8e;
+  --step-3: #3650b4;
 }

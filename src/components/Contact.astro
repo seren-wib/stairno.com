@@ -10,9 +10,11 @@ const { locale } = Astro.props;
 const copy = t(locale).contact;
 ---
 
-<section class="section" aria-labelledby="contact-title">
-  <h2 id="contact-title">{copy.heading}</h2>
-  <a class="button" href={`mailto:${site.email}`}>
-    {copy.action}
-  </a>
+<section class="section contact" aria-labelledby="contact-title">
+  <div class="container">
+    <h2 id="contact-title">{copy.heading}</h2>
+    <a class="contact-link" href={`mailto:${site.email}`}>
+      {copy.action}
+    </a>
+  </div>
 </section>

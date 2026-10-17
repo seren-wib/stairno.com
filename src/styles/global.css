@@ -16,41 +16,35 @@ body {
   background: var(--bg);
   color: var(--fg);
   font-family: var(--font-sans);
-  font-size: 1.0625rem;
+  font-size: 1.125rem;
   line-height: 1.6;
   word-break: keep-all;
   overflow-wrap: anywhere;
-  transition:
-    background-color 0.2s ease,
-    color 0.2s ease;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
 }
 
 h1,
 h2,
 h3 {
-  margin: 0;
-  line-height: 1.2;
-  letter-spacing: -0.02em;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
   font-weight: 700;
 }
 
-p {
-  margin: 0;
-}
-
 a {
-  color: var(--accent);
+  color: var(--link);
   text-decoration: none;
 }
 
-a:hover {
-  text-decoration: underline;
-}
-
 :focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-  border-radius: 6px;
+  outline: 3px solid var(--star);
+  outline-offset: 3px;
 }
 
 .container {
@@ -60,7 +54,14 @@ a:hover {
   padding: 0 var(--gutter);
 }
 
-/* Header */
+/* Header sits over the night sky, so it always uses the night palette. */
+
+.site-header {
+  position: absolute;
+  inset: 0 0 auto 0;
+  z-index: 2;
+  color: var(--on-night);
+}
 
 .site-header .container {
   display: flex;
@@ -70,14 +71,10 @@ a:hover {
 }
 
 .brand {
-  color: var(--fg);
-  font-weight: 700;
-  font-size: 1.125rem;
-  letter-spacing: -0.02em;
-}
-
-.brand:hover {
-  text-decoration: none;
+  color: var(--on-night);
+  font-weight: 800;
+  font-size: 1.25rem;
+  letter-spacing: -0.03em;
 }
 
 .site-nav {
@@ -90,140 +87,275 @@ a:hover {
   display: inline-flex;
   align-items: center;
   min-height: 44px;
-  padding: 0 0.75rem;
+  padding: 0 0.875rem;
   border-radius: 999px;
-  color: var(--fg-muted);
+  color: var(--on-night-muted);
   font-size: 0.9375rem;
 }
 
 .locale-switch:hover {
-  background: var(--bg-elevated);
-  text-decoration: none;
+  color: var(--on-night);
+  background: var(--on-night-faint);
+}
+
+/* Hero: a full-viewport night sky with the wordmark at the bottom left
+   and one star climbing a staircase on the right. SDD 4.3. */
+
+.hero {
+  position: relative;
+  overflow: hidden;
+  min-height: 100svh;
+  display: grid;
+  align-items: end;
+  padding-top: var(--header-height);
+  background: linear-gradient(180deg, var(--night) 0%, var(--horizon) 100%);
+  color: var(--on-night);
+}
+
+.hero-inner {
+  position: relative;
+  z-index: 1;
+  padding-top: var(--section-gap);
+  padding-bottom: clamp(3rem, 8vw, 6rem);
+}
+
+.hero-tagline {
+  color: var(--star);
+  font-size: clamp(1.125rem, 2.2vw, 1.5rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.wordmark {
+  margin: 0.25rem 0 1.5rem;
+  font-size: clamp(4.5rem, 15vw, 12rem);
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: -0.045em;
+}
+
+.hero-intro {
+  max-width: 30ch;
+  font-size: clamp(1.125rem, 2vw, 1.5rem);
+  line-height: 1.45;
+  color: var(--on-night);
+}
+
+.hero-etymology {
+  max-width: 58ch;
+  margin-top: 2rem;
+  font-size: 0.9375rem;
+  color: var(--on-night-muted);
+}
+
+.hero-art {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: clamp(260px, 42vw, 600px);
+  height: 52%;
+  pointer-events: none;
+}
+
+.hero-art .step {
+  position: absolute;
+  bottom: 0;
+  width: 25%;
+  background: var(--on-night-faint);
+  border-top: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+.hero-art .s1 {
+  left: 0;
+  height: 22%;
+}
+.hero-art .s2 {
+  left: 25%;
+  height: 44%;
+}
+.hero-art .s3 {
+  left: 50%;
+  height: 66%;
+}
+.hero-art .s4 {
+  left: 75%;
+  height: 88%;
+}
+
+.hero-art .star {
+  position: absolute;
+  left: 12.5%;
+  bottom: 22%;
+  width: 18px;
+  height: 18px;
+  margin: 0 0 14px -9px;
+  border-radius: 50%;
+  background: var(--star);
+  box-shadow:
+    0 0 0 6px rgba(255, 209, 102, 0.18),
+    0 0 36px 8px rgba(255, 209, 102, 0.55);
+  animation: climb 2.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: 0.4s;
+}
+
+@keyframes climb {
+  0% {
+    left: 12.5%;
+    bottom: 22%;
+  }
+  30% {
+    left: 37.5%;
+    bottom: 44%;
+  }
+  62% {
+    left: 62.5%;
+    bottom: 66%;
+  }
+  100% {
+    left: 87.5%;
+    bottom: 88%;
+  }
+}
+
+@media (max-width: 720px) {
+  .hero-art {
+    width: 78vw;
+    height: 38%;
+    opacity: 0.85;
+  }
+  .hero-inner {
+    padding-bottom: 42vh;
+  }
 }
 
 /* Sections */
 
-main {
-  padding-bottom: var(--section-gap);
-}
-
-.hero {
+.section {
   padding: var(--section-gap) 0;
 }
 
-.eyebrow {
-  color: var(--accent);
-  font-weight: 600;
-  font-size: 0.9375rem;
+.section h2 {
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  margin-bottom: 2rem;
 }
 
-.hero h1 {
-  margin-top: 0.5rem;
-  font-size: clamp(2.5rem, 6vw, 4.5rem);
+/* Projects: three steps, each a link, climbing left to right. */
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  align-items: end;
 }
 
-.lead {
-  margin-top: 1.25rem;
+.step-link {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 1.75rem;
+  border-radius: var(--radius) var(--radius) 0 0;
+  color: var(--on-night);
+  min-height: 220px;
+}
+
+.step-link:nth-child(1) {
+  background: var(--step-1);
+}
+.step-link:nth-child(2) {
+  background: var(--step-2);
+  min-height: 290px;
+}
+.step-link:nth-child(3) {
+  background: var(--step-3);
+  min-height: 360px;
+}
+
+.step-link:hover {
+  filter: brightness(1.12);
+}
+
+.step-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.step-description {
+  color: var(--on-night-muted);
+  font-size: 1rem;
+}
+
+.step-arrow {
+  align-self: flex-end;
+  color: var(--star);
   font-size: 1.25rem;
 }
 
-.muted {
-  margin-top: 0.75rem;
-  color: var(--fg-muted);
-  font-size: 0.9375rem;
-}
-
-.section {
-  margin-top: var(--section-gap);
-}
-
-.section h2 {
-  font-size: 1.5rem;
-  margin-bottom: 1.25rem;
-}
-
-.placeholder {
-  padding: 1.5rem;
-  border-radius: var(--radius);
-  background: var(--bg-elevated);
-  color: var(--fg-muted);
-}
-
-/* Cards */
-
-.cards {
-  display: grid;
-  gap: 1rem;
-  grid-template-columns: 1fr;
-}
-
-@media (min-width: 600px) {
-  .cards {
-    grid-template-columns: repeat(3, 1fr);
+@media (max-width: 720px) {
+  .steps {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  .step-link,
+  .step-link:nth-child(2),
+  .step-link:nth-child(3) {
+    min-height: 0;
+    border-radius: var(--radius);
+  }
+  .step-link:nth-child(2) {
+    margin-left: 1.5rem;
+  }
+  .step-link:nth-child(3) {
+    margin-left: 3rem;
   }
 }
 
-.card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  padding: 1.5rem;
-  border-radius: var(--radius);
-  background: var(--bg-elevated);
-  color: var(--fg);
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
-}
+/* News: one quiet line between rules. */
 
-.card:hover {
-  text-decoration: none;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-}
-
-.card-name {
-  font-weight: 700;
-  padding-right: 1.5rem;
-}
-
-.card-description {
-  color: var(--fg-muted);
-  font-size: 0.9375rem;
-}
-
-.card-arrow {
-  position: absolute;
-  top: 1.25rem;
-  right: 1.25rem;
+.news-line {
+  padding: 2rem 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  font-size: clamp(1.25rem, 2.5vw, 1.75rem);
   color: var(--fg-muted);
 }
 
-/* Buttons */
+/* Contact and footer close the page in the night palette, mirroring the hero. */
 
-.button {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  padding: 0 1.25rem;
-  border-radius: 999px;
-  background: var(--accent);
-  color: var(--accent-fg);
-  font-weight: 600;
+.contact {
+  background: var(--night);
+  color: var(--on-night);
 }
 
-.button:hover {
-  text-decoration: none;
-  filter: brightness(1.08);
+.contact h2 {
+  color: var(--star);
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
 }
 
-/* Footer */
+.contact-link {
+  display: inline-block;
+  color: var(--on-night);
+  font-size: clamp(2.25rem, 7vw, 5.5rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+  text-decoration-line: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.12em;
+}
+
+.contact-link:hover {
+  text-decoration-color: var(--star);
+}
 
 .site-footer {
-  border-top: 1px solid var(--border);
-  padding: 1.5rem 0;
-  color: var(--fg-muted);
+  background: var(--night);
+  color: var(--on-night-muted);
+  border-top: 1px solid var(--on-night-faint);
+  padding: 1.75rem 0;
   font-size: 0.9375rem;
 }
 
@@ -233,21 +365,43 @@ main {
   gap: 1rem;
 }
 
+.site-footer a {
+  color: var(--on-night);
+}
+
+.site-footer a:hover,
+.news-line a:hover {
+  text-decoration: underline;
+}
+
 /* 404 */
 
 .not-found {
   display: grid;
   gap: var(--section-gap);
-  padding: var(--section-gap) var(--gutter);
+  padding: calc(var(--header-height) + var(--section-gap)) var(--gutter) var(--section-gap);
 }
 
 .not-found h1 {
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
+  font-size: clamp(2rem, 5vw, 3rem);
+  margin-bottom: 1.25rem;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 0 1.5rem;
+  border-radius: 999px;
+  background: var(--star);
+  color: var(--night);
+  font-weight: 700;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  * {
-    transition: none !important;
+  .hero-art .star {
+    animation: none;
+    left: 87.5%;
+    bottom: 88%;
   }
 }
