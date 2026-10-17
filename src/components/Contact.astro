@@ -10,10 +10,17 @@ const { locale } = Astro.props;
 const copy = t(locale).contact;
 ---
 
-<section id="contact" class="section contact" aria-labelledby="contact-title">
+<section id="contact" class="section contact" aria-labelledby="contact-title" data-screen>
   <div class="container">
     <h2 id="contact-title" data-reveal>
-      <span data-dot-text data-dot-trigger="visible" data-dot-spacing="2.5" data-dot-radius="0.4">
+      <span
+        data-dot-text
+        data-dot-trigger="visible"
+        data-dot-spacing="3"
+        data-dot-radius="0.33"
+        data-dot-rise="56"
+        data-dot-spread="0.25"
+      >
         {copy.heading}
       </span>
     </h2>

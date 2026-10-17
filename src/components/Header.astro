@@ -32,7 +32,8 @@ const sections = [
                 data-dot-text
                 data-dot-trigger="current"
                 data-dot-spacing="1.5"
-                data-dot-radius="0.38"
+                data-dot-radius="0.34"
+                data-dot-spread="0.2"
                 data-dot-color="star"
               >
                 {item.label}
@@ -55,37 +56,46 @@ const sections = [
     window.addEventListener('scroll', update, { passive: true });
   }
 
-  // Scroll spy: the menu link whose section fills most of the viewport is current.
+  // Scroll spy: the menu link whose section covers the most of the viewport
+  // (below the header) is current. Measured on scroll rather than through
+  // IntersectionObserver ratios, which favour short sections over tall ones.
+  // At the end of the page the last section is current so the menu can reach
+  // its final item.
   const links = Array.from(
     document.querySelectorAll<HTMLAnchorElement>('[data-menu] a[href^="#"]'),
   );
   const sections = links
     .map((link) => document.querySelector<HTMLElement>(link.getAttribute('href') ?? ''))
     .filter((section): section is HTMLElement => section !== null);
-  if (links.length > 0 && sections.length > 0 && 'IntersectionObserver' in window) {
-    const ratios = new Map<Element, number>();
+  if (links.length > 0 && sections.length > 0) {
+    const headerHeight = header?.offsetHeight ?? 0;
+    let frame = 0;
+    const atEnd = () =>
+      window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
     const setCurrent = () => {
+      frame = 0;
       let best: Element | null = null;
-      let bestRatio = 0.2;
-      for (const [section, ratio] of ratios) {
-        if (ratio > bestRatio) {
+      let bestCover = 0;
+      for (const section of sections) {
+        const rect = section.getBoundingClientRect();
+        const cover = Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, headerHeight);
+        if (cover > bestCover) {
           best = section;
-          bestRatio = ratio;
+          bestCover = cover;
         }
       }
+      if (atEnd()) best = sections[sections.length - 1] ?? best;
       for (const link of links) {
         const current = best !== null && link.getAttribute('href') === `#${best.id}`;
         if (current) link.setAttribute('aria-current', 'true');
         else link.removeAttribute('aria-current');
       }
     };
-    const spy = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) ratios.set(entry.target, entry.intersectionRatio);
-        setCurrent();
-      },
-      { threshold: [0, 0.2, 0.4, 0.6, 0.8, 1], rootMargin: '-72px 0px 0px 0px' },
-    );
-    sections.forEach((section) => spy.observe(section));
+    const schedule = () => {
+      if (frame === 0) frame = requestAnimationFrame(setCurrent);
+    };
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', schedule);
+    setCurrent();
   }
 </script>

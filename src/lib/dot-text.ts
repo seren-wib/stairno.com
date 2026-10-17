@@ -12,8 +12,15 @@ export type Sample = { points: MaskPoint[]; width: number; height: number };
 export function sampleText(el: HTMLElement, spacing: number): Sample {
   const style = getComputedStyle(el);
   const size = parseFloat(style.fontSize);
-  // Integer canvas size: the mask is indexed as row * width + column.
-  const width = Math.ceil(el.offsetWidth + spacing);
+  const text = el.textContent?.trim() ?? '';
+  const probe = document.createElement('canvas').getContext('2d');
+  if (!probe) return { points: [], width: 0, height: 0 };
+  const font = `${style.fontWeight} ${size}px ${style.fontFamily}`;
+  probe.font = font;
+  const metrics = probe.measureText(text);
+  // Integer canvas size, wide enough for the canvas text as well as the DOM text
+  // (the two can differ by a few px), so the last glyph is never cut off.
+  const width = Math.ceil(Math.max(el.offsetWidth, metrics.width) + spacing * 2);
   const height = Math.ceil(el.offsetHeight + spacing);
   if (width <= 0 || height <= 0) return { points: [], width, height };
   const off = document.createElement('canvas');
@@ -21,12 +28,10 @@ export function sampleText(el: HTMLElement, spacing: number): Sample {
   off.height = height;
   const ctx = off.getContext('2d');
   if (!ctx) return { points: [], width, height };
-  ctx.font = `${style.fontWeight} ${size}px ${style.fontFamily}`;
+  ctx.font = font;
   ctx.textBaseline = 'alphabetic';
   ctx.fillStyle = '#fff';
   // Place the baseline where the browser does: centre the font box in the line box.
-  const text = el.textContent?.trim() ?? '';
-  const metrics = ctx.measureText(text);
   const ascent = metrics.fontBoundingBoxAscent || size * 0.8;
   const descent = metrics.fontBoundingBoxDescent || size * 0.2;
   const lineHeight = parseFloat(style.lineHeight) || size;
@@ -50,6 +55,8 @@ export type DotTextOptions = {
   settle?: 'keep' | 'reveal';
   // dot radius as a fraction of the spacing (0.5 = dots touch)
   radius?: number;
+  // px the dots rise from while assembling
+  rise?: number;
 };
 
 export function mountDotText(el: HTMLElement, options: DotTextOptions): void {
@@ -63,6 +70,7 @@ export function mountDotText(el: HTMLElement, options: DotTextOptions): void {
   if (!context) return;
   const spread = options.spread ?? 0.5;
   const radius = options.radius ?? 0.45;
+  const rise = options.rise ?? 0;
 
   let sample: Sample = { points: [], width: 0, height: 0 };
   let dpr = 1;
@@ -94,7 +102,7 @@ export function mountDotText(el: HTMLElement, options: DotTextOptions): void {
       const scale = burst(p);
       const grow = Math.min(1, p * 1.4);
       const px = cx + (point.x + point.sx * (1 - p) - cx) * scale;
-      const py = cy + (point.y + point.sy * (1 - p) - cy) * scale;
+      const py = cy + (point.y + point.sy * (1 - p) - cy) * scale + rise * (1 - p);
       context!.globalAlpha = grow;
       context!.beginPath();
       context!.arc(px, py, options.spacing * radius * grow, 0, Math.PI * 2);

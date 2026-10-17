@@ -69,6 +69,18 @@ const fontHref =
   <body>
     <slot />
     <script>
+      import { createSlider } from '../lib/slider';
+      import { createPageScroll } from '../lib/screens';
+
+      const sliders = Array.from(document.querySelectorAll<HTMLElement>('[data-slider]')).map(
+        (root) => createSlider(root),
+      );
+      createPageScroll(
+        Array.from(document.querySelectorAll<HTMLElement>('[data-screen]')),
+        sliders.map((slider) => slider.consume),
+      );
+    </script>
+    <script>
       import { mountDotText } from '../lib/dot-text';
 
       const rootStyle = getComputedStyle(document.documentElement);
@@ -77,12 +89,14 @@ const fontHref =
         const spacing = Number(el.dataset.dotSpacing) || 4;
         const color =
           el.dataset.dotColor === 'star'
-            ? () => rootStyle.getPropertyValue('--star').trim() || '#ffd166'
+            ? () => rootStyle.getPropertyValue('--star').trim() || '#ffffff'
             : () =>
                 getComputedStyle(el).getPropertyValue('--dot-text-color').trim() || 'currentColor';
         const settle = el.dataset.dotSettle === 'reveal' ? 'reveal' : 'keep';
         const radius = Number(el.dataset.dotRadius) || 0.45;
-        mountDotText(el, { spacing, color, trigger, settle, radius });
+        const rise = Number(el.dataset.dotRise) || 0;
+        const spread = el.dataset.dotSpread ? Number(el.dataset.dotSpread) : 0.5;
+        mountDotText(el, { spacing, color, trigger, settle, radius, rise, spread });
       }
     </script>
     <script>

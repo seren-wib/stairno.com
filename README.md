@@ -109,9 +109,9 @@ A few details:
 - **Both dictionaries share one type.** A key missing from `ko` or `en` fails `astro check`; an empty string fails a unit test.
 - **The inline theme script is tested against the TypeScript logic.** The integration suite runs the built `<script>` with fake storage and `matchMedia` and compares it with `resolveTheme`.
 - **The hub never grows commerce.** A built-output test fails if a form, an input, or intake and payment wording appears.
-- **Projects rotate on their own.** One project per full-width slide; the slider restarts from the first slide each time it scrolls into view and advances every five seconds, pausing on hover, focus or a hidden tab. The three step-shaped dots jump directly. Section headings and the current header menu item are drawn as dots that assemble when they appear.
-- **The hero is drawn, not loaded.** A canvas samples a pure dot field (`src/lib/dots.ts`) on a 14px grid: a halftone staircase and a star that hops to the top step on load. No image files ship with the site.
-- **Night sky, one star, two themes.** The hero, contact band and footer always use the night palette; body tokens are declared on `html[data-theme]`, so switching is one attribute.
+- **One gesture, one screen.** The page scrolls like slides: a wheel notch, a swipe or an arrow key moves exactly one screen (hero, projects, news, contact, footer). On the projects screen the same gesture turns one card instead, and only past the last card does the page move on. Each project card fills the whole viewport. No timer. Section headings and the current header menu item are drawn as dots that assemble when they appear.
+- **The hero is drawn, not loaded.** A canvas samples a pure dot field (`src/lib/dots.ts`) on a 14px grid: a halftone staircase and a star that hops to the top step. On the first paint the whole picture is wrapped around a dot globe that turns and unfolds flat. No image files ship with the site.
+- **Black, white and greys, two themes.** The hero, contact band and footer are always black with white dots; body tokens are declared on `html[data-theme]`, so switching is one attribute.
 
 The design documents (plan, requirements, design, test and deploy) live in Google Docs; [CLAUDE.md](CLAUDE.md) lists them and the rules that follow from them.
 
