@@ -10,18 +10,20 @@
 <script>
   import {
     assemble,
+    burst,
     climbCycle,
     dotField,
     dotsFromMask,
-    jitter,
+    ripple,
     type MaskPoint,
   } from '../lib/dots';
 
   const SPACING = 14;
   const LETTER_SPACING = 6;
-  // Dots start scattered all over the canvas and drift into place: each dot
-  // takes `settle` seconds, starting between `delay` and `delay + spread`.
-  const INTRO = { delay: 0.2, spread: 1.4, settle: 1.8 };
+  // The whole picture bursts out of the dark from the canvas centre: every
+  // dot (sky, staircase, star, letters) flies past its place and settles.
+  // Dots further from the centre start later, so it reads as a wave.
+  const INTRO = { delay: 0.2, spread: 0.9, settle: 1.5 };
   const INTRO_END = INTRO.delay + INTRO.spread + INTRO.settle;
   const settleAt = (seconds: number, delay: number) =>
     assemble(seconds / INTRO.settle, delay / INTRO.settle);
@@ -36,6 +38,10 @@
     if (!narrow) return u;
     return u < 0.5 ? u * 0.6 : 0.3 + ((u - 0.5) / 0.5) * 0.7;
   }
+
+  // Click ripple: ring speed px/s, band width px, life s, push distance px.
+  const WAVE = { speed: 900, width: 90, life: 1.4 };
+  const PUSH = 22;
 
   const YELLOW = { r: 255, g: 209, b: 102 };
   const HOT = { r: 255, g: 247, b: 224 };
@@ -99,6 +105,26 @@
     let letters: MaskPoint[] = [];
     let start = performance.now();
     let frame = 0;
+    let ripples: { x: number; y: number; at: number }[] = [];
+
+    // Returns [dx, dy, strength] for a dot at (x, y) given the live ripples.
+    function nudge(x: number, y: number, now: number): [number, number, number] {
+      let dx = 0;
+      let dy = 0;
+      let total = 0;
+      for (const r of ripples) {
+        const age = (now - r.at) / 1000;
+        const vx = x - r.x;
+        const vy = y - r.y;
+        const dist = Math.hypot(vx, vy) || 1;
+        const k = ripple(dist, age, WAVE);
+        if (k <= 0.001) continue;
+        dx += (vx / dist) * k * PUSH;
+        dy += (vy / dist) * k * PUSH;
+        total += k;
+      }
+      return [dx, dy, Math.min(1, total)];
+    }
 
     function resize(): void {
       const rect = canvas.getBoundingClientRect();
@@ -116,6 +142,9 @@
       const seconds = reduceMotion ? 1e9 : (now - start) / 1000;
       const cycle = reduceMotion ? { progress: 1, strength: 1 } : climbCycle(seconds, TIMING);
       const narrow = width < height;
+      const cx = width / 2;
+      const cy = height / 2;
+      const maxDist = Math.hypot(cx, cy) || 1;
       context!.clearRect(0, 0, width, height);
 
       // Background and staircase on the coarse grid.
@@ -132,29 +161,34 @@
             seconds,
             cycle.strength,
           );
-          const seed = row * 4096 + col;
-          const p = settleAt(seconds, INTRO.delay + ((jitter(seed + 4) + 1) / 2) * INTRO.spread);
+          const dist = Math.hypot(fx - cx, fy - cy) / maxDist;
+          const p = settleAt(seconds, INTRO.delay + dist * INTRO.spread);
           if (p <= 0) continue;
-          const isShape = dot.alpha > 0.3; // staircase and star dots drift in; sky dots fade in
-          const sx = ((jitter(seed + 2) + 1) / 2) * width;
-          const sy = ((jitter(seed + 3) + 1) / 2) * height;
-          const px = isShape ? sx + (fx - sx) * p : fx;
-          const py = isShape ? sy + (fy - sy) * p : fy;
-          const grow = isShape ? Math.min(1, 0.3 + p) : p;
-          context!.fillStyle = colour(dot.warmth, dot.alpha * grow);
+          const scale = burst(p);
+          const [nx, ny, k] = ripples.length ? nudge(fx, fy, now) : [0, 0, 0];
+          const px = cx + (fx - cx) * scale + nx;
+          const py = cy + (fy - cy) * scale + ny;
+          const grow = Math.min(1, 0.2 + p);
+          context!.fillStyle = colour(
+            Math.min(1, dot.warmth + k * 0.6),
+            Math.min(1, dot.alpha * grow + k * 0.5),
+          );
           context!.beginPath();
-          context!.arc(px, py, dot.radius * SPACING * (isShape ? grow : 1), 0, Math.PI * 2);
+          context!.arc(px, py, dot.radius * SPACING * grow * (1 + k * 1.1), 0, Math.PI * 2);
           context!.fill();
         }
       }
 
       // Wordmark on the fine grid.
       for (const point of letters) {
-        const p = settleAt(seconds, INTRO.delay + point.delay * INTRO.spread);
+        const dist = Math.hypot(point.x - cx, point.y - cy) / maxDist;
+        const p = settleAt(seconds, INTRO.delay + dist * INTRO.spread);
         if (p <= 0) continue;
-        const grow = Math.min(1, 0.3 + p);
-        const px = point.rx * width + (point.x - point.rx * width) * p;
-        const py = point.ry * height + (point.y - point.ry * height) * p;
+        const scale = burst(p);
+        const grow = Math.min(1, 0.2 + p);
+        const [nx, ny] = ripples.length ? nudge(point.x, point.y, now) : [0, 0];
+        const px = cx + (point.x + point.sx * (1 - p) - cx) * scale + nx;
+        const py = cy + (point.y + point.sy * (1 - p) - cy) * scale + ny;
         context!.fillStyle = `rgba(255, 255, 255, ${(0.96 * grow).toFixed(3)})`;
         context!.beginPath();
         context!.arc(px, py, LETTER_SPACING * 0.42 * grow, 0, Math.PI * 2);
@@ -163,9 +197,20 @@
     }
 
     function loop(now: number): void {
+      ripples = ripples.filter((r) => now - r.at < WAVE.life * 1000);
       draw(now);
       frame = requestAnimationFrame(loop);
     }
+
+    hero.addEventListener('pointerdown', (event) => {
+      if (reduceMotion) return;
+      const rect = canvas.getBoundingClientRect();
+      ripples.push({
+        x: event.clientX - rect.left,
+        y: event.clientY - rect.top,
+        at: performance.now(),
+      });
+    });
 
     resize();
     if (reduceMotion) {

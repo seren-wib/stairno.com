@@ -192,3 +192,19 @@ export function dotsFromMask(
   }
   return points;
 }
+
+// --- Click ripple: a ring that expands from the pointer and nudges dots ---
+
+export type Wave = { speed: number; width: number; life: number };
+
+// Strength (0..1) of a ripple on a dot `dist` px from the click, `age`
+// seconds after it. A Gaussian band around the expanding ring, fading
+// linearly to zero at `life`.
+export function ripple(dist: number, age: number, wave: Wave): number {
+  if (age < 0 || age >= wave.life) return 0;
+  const ring = wave.speed * age;
+  const d = dist - ring;
+  const band = Math.exp(-(d * d) / (2 * wave.width * wave.width));
+  const fade = 1 - age / wave.life;
+  return band * fade;
+}
