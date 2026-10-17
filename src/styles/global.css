@@ -137,6 +137,7 @@ button {
 .site-menu a[aria-current='true'] {
   padding: 0 1.375rem;
   color: var(--star);
+  font-size: 1.125rem;
 }
 
 /* Dot text: the real text stays for assistive tech, the canvas paints the dots. */

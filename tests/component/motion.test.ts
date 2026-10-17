@@ -36,16 +36,12 @@ describe('Projects slider', () => {
   );
 
   it.each(locales)(
-    'FR-6 has previous, next and one labelled dot per project in %s',
+    'FR-6 has one labelled dot per project and no arrow buttons in %s',
     async (locale) => {
       const root = await render(Projects, { locale });
       const copy = t(locale).projects;
-      expect(root.querySelector('button[data-slider-prev]')?.getAttribute('aria-label')).toBe(
-        copy.previous,
-      );
-      expect(root.querySelector('button[data-slider-next]')?.getAttribute('aria-label')).toBe(
-        copy.next,
-      );
+      expect(root.querySelector('button[data-slider-prev]')).toBeNull();
+      expect(root.querySelector('button[data-slider-next]')).toBeNull();
       const dots = root.querySelectorAll('button[data-slider-dot]');
       expect(dots).toHaveLength(projects.length);
       expect(dots[0]?.getAttribute('aria-label')).toBe(
