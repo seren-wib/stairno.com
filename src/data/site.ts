@@ -1,6 +1,6 @@
 export const site = {
   name: 'Stairno',
   url: 'https://stairno.com',
-  email: 'hello@stairno.com',
+  email: 'contact@stairno.com',
   github: 'https://github.com/seren-wib/stairno.com',
 } as const;
