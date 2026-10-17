@@ -69,6 +69,21 @@ const fontHref =
   <body>
     <slot />
     <script>
+      import { mountDotText } from '../lib/dot-text';
+
+      const rootStyle = getComputedStyle(document.documentElement);
+      for (const el of document.querySelectorAll<HTMLElement>('[data-dot-text]')) {
+        const trigger = (el.dataset.dotTrigger ?? 'always') as 'always' | 'visible' | 'current';
+        const spacing = Number(el.dataset.dotSpacing) || 4;
+        const color =
+          el.dataset.dotColor === 'star'
+            ? () => rootStyle.getPropertyValue('--star').trim() || '#ffd166'
+            : () =>
+                getComputedStyle(el).getPropertyValue('--dot-text-color').trim() || 'currentColor';
+        mountDotText(el, { spacing, color, trigger });
+      }
+    </script>
+    <script>
       // Scroll reveal for [data-reveal] elements (SDD 4.6). Replays every time an
       // element scrolls back into view.
       const targets = document.querySelectorAll<HTMLElement>('[data-reveal]');
