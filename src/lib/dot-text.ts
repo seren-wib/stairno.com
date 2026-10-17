@@ -12,8 +12,9 @@ export type Sample = { points: MaskPoint[]; width: number; height: number };
 export function sampleText(el: HTMLElement, spacing: number): Sample {
   const style = getComputedStyle(el);
   const size = parseFloat(style.fontSize);
-  const width = Math.ceil(el.offsetWidth) + spacing;
-  const height = Math.ceil(el.offsetHeight) + spacing;
+  // Integer canvas size: the mask is indexed as row * width + column.
+  const width = Math.ceil(el.offsetWidth + spacing);
+  const height = Math.ceil(el.offsetHeight + spacing);
   if (width <= 0 || height <= 0) return { points: [], width, height };
   const off = document.createElement('canvas');
   off.width = width;
