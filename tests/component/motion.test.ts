@@ -1,9 +1,11 @@
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { parse } from 'node-html-parser';
 import { describe, expect, it } from 'vitest';
+import Contact from '../../src/components/Contact.astro';
 import Footer from '../../src/components/Footer.astro';
 import Header from '../../src/components/Header.astro';
 import Hero from '../../src/components/Hero.astro';
+import News from '../../src/components/News.astro';
 import Projects from '../../src/components/Projects.astro';
 import { projects } from '../../src/data/projects';
 import { locales, t } from '../../src/i18n';
@@ -87,6 +89,25 @@ describe('Header', () => {
       copy.news.heading,
       copy.contact.heading,
     ]);
+  });
+});
+
+describe('dot text', () => {
+  it('renders each header menu label as a dot-text target that follows aria-current', async () => {
+    const root = await render(Header, { locale: 'ko' });
+    const labels = root.querySelectorAll('[data-menu] a > [data-dot-text]');
+    expect(labels).toHaveLength(3);
+    for (const label of labels) {
+      expect(label.getAttribute('data-dot-trigger')).toBe('current');
+    }
+  });
+
+  it('renders section headings as dot-text targets that assemble when visible', async () => {
+    for (const component of [Projects, News, Contact]) {
+      const root = await render(component, { locale: 'ko' });
+      const label = root.querySelector('h2[data-reveal] > [data-dot-text]');
+      expect(label?.getAttribute('data-dot-trigger')).toBe('visible');
+    }
   });
 });
 
