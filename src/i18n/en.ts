@@ -3,8 +3,7 @@ import type { Dictionary } from './types';
 export const en: Dictionary = {
   meta: {
     title: 'Stairno',
-    description:
-      'A star that climbs from the ground. Stairno builds client work, games and small tools.',
+    description: 'A star, one step at a time. Stairno makes games and small tools.',
   },
   nav: {
     home: 'Home',
@@ -16,10 +15,9 @@ export const en: Dictionary = {
     },
   },
   hero: {
-    tagline: 'A star that climbs from the ground',
-    intro: 'Stairno builds client work, games and small tools.',
-    etymology:
-      'The name comes from Gothic stairno, “star”. Read in English it carries stair: a star climbing one step at a time.',
+    tagline: 'A star, one step at a time',
+    intro: 'Games and small tools. Started small, finished.',
+    etymology: 'Stairno: star in Gothic, stair in English.',
   },
   projects: {
     heading: 'Projects',

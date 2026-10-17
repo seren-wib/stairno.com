@@ -3,7 +3,7 @@ import type { Dictionary } from './types';
 export const ko: Dictionary = {
   meta: {
     title: 'Stairno',
-    description: '바닥에서 올라가는 별. Stairno는 외주 작업, 게임, 작은 도구를 만듭니다.',
+    description: '한 칸씩 올라가는 별. Stairno는 게임과 작은 도구를 만듭니다.',
   },
   nav: {
     home: '홈',
@@ -15,10 +15,9 @@ export const ko: Dictionary = {
     },
   },
   hero: {
-    tagline: '바닥에서 올라가는 별',
-    intro: 'Stairno는 외주 작업, 게임, 작은 도구를 만듭니다.',
-    etymology:
-      '이름은 고트어 stairno(별)에서 왔습니다. 영어로 읽으면 stair가 들어갑니다. 한 칸씩 올라가는 별.',
+    tagline: '한 칸씩 올라가는 별',
+    intro: '게임과 작은 도구를 만듭니다. 작게 시작해서, 끝까지.',
+    etymology: 'Stairno. 고트어로는 별, 영어로 읽으면 계단.',
   },
   projects: {
     heading: '프로젝트',
