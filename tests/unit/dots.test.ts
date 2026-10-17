@@ -133,6 +133,10 @@ describe('dotsFromMask', () => {
       expect(Math.abs(p.sx)).toBeGreaterThan(0);
       expect(p.delay).toBeGreaterThanOrEqual(0);
       expect(p.delay).toBeLessThanOrEqual(1);
+      expect(p.rx).toBeGreaterThanOrEqual(0);
+      expect(p.rx).toBeLessThanOrEqual(1);
+      expect(p.ry).toBeGreaterThanOrEqual(0);
+      expect(p.ry).toBeLessThanOrEqual(1);
     }
   });
 });
