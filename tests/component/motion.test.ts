@@ -70,6 +70,18 @@ describe('Header', () => {
     const root = await render(Header, { locale: 'ko' });
     expect(root.querySelector('header[data-sticky]')).not.toBeNull();
   });
+
+  it.each(locales)('FR-4 links to the three sections of the page in %s', async (locale) => {
+    const root = await render(Header, { locale });
+    const copy = t(locale);
+    const links = root.querySelectorAll('nav a[href^="#"]');
+    expect(links.map((a) => a.getAttribute('href'))).toEqual(['#projects', '#news', '#contact']);
+    expect(links.map((a) => a.text.trim())).toEqual([
+      copy.projects.heading,
+      copy.news.heading,
+      copy.contact.heading,
+    ]);
+  });
 });
 
 describe('scroll reveal', () => {
