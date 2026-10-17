@@ -110,6 +110,7 @@ A few details:
 - **The inline theme script is tested against the TypeScript logic.** The integration suite runs the built `<script>` with fake storage and `matchMedia` and compares it with `resolveTheme`.
 - **The hub never grows commerce.** A built-output test fails if a form, an input, or intake and payment wording appears.
 - **Projects rotate on their own.** One project per full-width slide, advancing every five seconds; hover, focus or a hidden tab pauses it, and the three step-shaped dots jump directly. The header turns solid once the page scrolls, and section copy rises into view once.
+- **The hero is drawn, not loaded.** A canvas samples a pure dot field (`src/lib/dots.ts`) on a 14px grid: a halftone staircase and a star that hops to the top step on load. No image files ship with the site.
 - **Night sky, one star, two themes.** The hero, contact band and footer always use the night palette; body tokens are declared on `html[data-theme]`, so switching is one attribute.
 
 The design documents (plan, requirements, design, test and deploy) live in Google Docs; [CLAUDE.md](CLAUDE.md) lists them and the rules that follow from them.
@@ -128,10 +129,9 @@ dist/
 ├─ robots.txt
 ├─ sitemap-index.xml
 ├─ sitemap-0.xml
-└─ favicon.svg
+├─ favicon.svg
+└─ _astro/             hashed stylesheet and the slider, reveal and dot-canvas scripts
 ```
-
-CSS and the theme toggle script are inlined into each page, so there is no asset folder.
 
 </details>
 
