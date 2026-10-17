@@ -80,7 +80,8 @@ const fontHref =
             ? () => rootStyle.getPropertyValue('--star').trim() || '#ffd166'
             : () =>
                 getComputedStyle(el).getPropertyValue('--dot-text-color').trim() || 'currentColor';
-        mountDotText(el, { spacing, color, trigger });
+        const settle = el.dataset.dotSettle === 'reveal' ? 'reveal' : 'keep';
+        mountDotText(el, { spacing, color, trigger, settle });
       }
     </script>
     <script>

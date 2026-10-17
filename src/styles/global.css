@@ -116,7 +116,7 @@ button {
   padding: 0 0.875rem;
   border-radius: 999px;
   color: var(--on-night);
-  font-size: 0.9375rem;
+  font-size: 1rem;
   font-weight: 600;
   transition: background-color 0.2s ease;
 }
@@ -148,6 +148,11 @@ button {
 
 .has-dot-text.is-dots {
   color: transparent;
+  transition: color 0.45s ease;
+}
+
+.has-dot-text.is-dots.is-settled {
+  color: inherit;
 }
 
 .dot-text-canvas {
@@ -155,6 +160,7 @@ button {
   top: 0;
   left: 0;
   pointer-events: none;
+  transition: opacity 0.45s ease;
 }
 
 .section h2 .has-dot-text {
