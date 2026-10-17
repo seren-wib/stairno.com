@@ -9,7 +9,7 @@ const { locale } = Astro.props;
 const copy = t(locale).news;
 ---
 
-<section class="section" aria-labelledby="news-title">
+<section id="news" class="section" aria-labelledby="news-title">
   <div class="container">
     <h2 id="news-title" data-reveal>
       {copy.heading}

@@ -9,6 +9,12 @@
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+.section,
+.hero {
+  scroll-margin-top: var(--header-height);
 }
 
 body {
@@ -95,6 +101,36 @@ button {
   gap: 0.25rem;
 }
 
+.site-menu {
+  display: flex;
+  gap: 0.25rem;
+  margin: 0 0.75rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.site-menu a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 0.875rem;
+  border-radius: 999px;
+  color: var(--on-night);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.site-menu a:hover {
+  background: var(--on-night-faint);
+}
+
+@media (max-width: 720px) {
+  .site-menu {
+    display: none;
+  }
+}
+
 .locale-switch {
   display: inline-flex;
   align-items: center;
@@ -117,20 +153,24 @@ button {
 
 html.js [data-reveal] {
   opacity: 0;
-  transform: translateY(28px);
+  transform: translateY(72px);
   transition:
-    opacity 0.7s ease,
-    transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+    opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 html.js [data-reveal='2'] {
-  transition-delay: 0.12s;
+  transition-delay: 0.15s;
 }
 html.js [data-reveal='3'] {
-  transition-delay: 0.24s;
+  transition-delay: 0.3s;
 }
 html.js [data-reveal='4'] {
-  transition-delay: 0.36s;
+  transition-delay: 0.45s;
+}
+
+html.js .section h2[data-reveal] {
+  transform: translateY(96px);
 }
 
 html.js [data-reveal].is-visible {
@@ -439,27 +479,33 @@ html.js [data-reveal].is-visible {
 }
 
 .contact h2 {
-  color: var(--star);
-  font-size: 1.25rem;
-  margin-bottom: 1rem;
+  color: var(--on-night);
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  margin-bottom: 1.5rem;
+}
+
+.contact h2 + .contact-link {
+  margin-top: 0.5rem;
 }
 
 .contact-link {
-  display: inline-block;
-  color: var(--on-night);
-  font-size: clamp(2.25rem, 7vw, 5.5rem);
-  font-weight: 800;
-  line-height: 1.05;
-  letter-spacing: -0.04em;
-  text-decoration-line: underline;
-  text-decoration-color: transparent;
-  text-decoration-thickness: 0.08em;
-  text-underline-offset: 0.12em;
-  transition: text-decoration-color 0.25s ease;
+  display: inline-flex;
+  align-items: center;
+  min-height: 56px;
+  padding: 0 1.75rem;
+  border-radius: 999px;
+  background: var(--star);
+  color: var(--night);
+  font-size: 1.125rem;
+  font-weight: 700;
+  transition:
+    transform 0.2s ease,
+    filter 0.2s ease;
 }
 
 .contact-link:hover {
-  text-decoration-color: var(--star);
+  transform: translateY(-2px);
+  filter: brightness(1.05);
 }
 
 .site-footer {
@@ -545,6 +591,9 @@ html.js [data-reveal].is-visible {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
   .hero-art .star {
     animation: none;
     left: 87.5%;
@@ -557,6 +606,7 @@ html.js [data-reveal].is-visible {
   .arrow,
   .project-arrow,
   .contact-link,
+  .site-menu a,
   .locale-switch {
     transition: none;
   }

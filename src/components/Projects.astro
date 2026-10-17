@@ -12,7 +12,7 @@ const copy = t(locale).projects;
 const INTERVAL = 5000;
 ---
 
-<section class="section projects" aria-labelledby="projects-title">
+<section id="projects" class="section projects" aria-labelledby="projects-title">
   <div class="container">
     <h2 id="projects-title" data-reveal>
       {copy.heading}
@@ -21,6 +21,7 @@ const INTERVAL = 5000;
   <div
     class="slider"
     data-slider
+    data-reveal="2"
     data-interval={INTERVAL}
     aria-roledescription="carousel"
     aria-label={copy.heading}
