@@ -221,13 +221,6 @@ html.js [data-reveal].is-visible {
   color: var(--on-night);
 }
 
-.hero-etymology {
-  max-width: 58ch;
-  margin-top: 2rem;
-  font-size: 0.9375rem;
-  color: var(--on-night-muted);
-}
-
 .hero-dots {
   position: absolute;
   inset: 0;
@@ -480,6 +473,10 @@ html.js [data-reveal].is-visible {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+}
+
+.footer-etymology {
+  color: var(--on-night-muted);
 }
 
 .footer-heading {

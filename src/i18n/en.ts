@@ -3,7 +3,7 @@ import type { Dictionary } from './types';
 export const en: Dictionary = {
   meta: {
     title: 'Stairno',
-    description: 'A star, one step at a time. Stairno makes games and small tools.',
+    description: 'Small things, finished. Stairno makes games and tools.',
   },
   nav: {
     home: 'Home',
@@ -15,9 +15,9 @@ export const en: Dictionary = {
     },
   },
   hero: {
-    tagline: 'A star, one step at a time',
-    intro: 'Games and small tools. Started small, finished.',
-    etymology: 'Stairno: star in Gothic, stair in English.',
+    tagline: 'Small things, finished.',
+    intro: 'Stairno makes games and tools.',
+    etymology: 'stairno, Gothic for star.',
   },
   projects: {
     heading: 'Projects',

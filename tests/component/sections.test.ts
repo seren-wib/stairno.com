@@ -22,13 +22,12 @@ async function render(
 }
 
 describe('Hero', () => {
-  it.each(locales)('FR-5 shows the brand, tagline, intro and etymology in %s', async (locale) => {
+  it.each(locales)('FR-5 shows the brand, tagline and intro in %s', async (locale) => {
     const root = await render(Hero, { locale });
     const text = root.text;
     expect(root.querySelector('h1')?.text.trim()).toBe(site.name);
     expect(text).toContain(t(locale).hero.tagline);
     expect(text).toContain(t(locale).hero.intro);
-    expect(text).toContain(t(locale).hero.etymology);
   });
 
   it.each(locales)('DR-2 never calls the brand a company or studio in %s', async (locale) => {
@@ -87,6 +86,7 @@ describe('Footer', () => {
     expect(root.querySelector('footer')).not.toBeNull();
     expect(root.text).toContain(site.name);
     expect(root.text).toContain(String(new Date().getFullYear()));
+    expect(root.text).toContain(t(locale).hero.etymology);
     const source = root.querySelector(`a[href="${site.github}"]`);
     expect(source?.text.trim()).toBe(t(locale).footer.source);
   });
