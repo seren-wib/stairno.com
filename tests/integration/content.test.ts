@@ -53,6 +53,17 @@ describe.each(locales)('home content /%s/', (locale) => {
     expect(meta(home, 'og:site_name')).toBe(site.name);
   });
 
+  it('FR-17 points link previews at a 1200x630 image that ships with the site', () => {
+    expect(meta(home, 'og:image')).toBe(`${site.url}/og.png`);
+    expect(meta(home, 'og:image:width')).toBe('1200');
+    expect(meta(home, 'og:image:height')).toBe('630');
+    expect(meta(home, 'og:image:alt')).toBe(dictionary.meta.title);
+    expect(home.querySelector('meta[name="twitter:card"]')?.getAttribute('content')).toBe(
+      'summary_large_image',
+    );
+    expect(existsSync(join(dist, 'og.png'))).toBe(true);
+  });
+
   it('FR-6 links to the three project sites and nothing else in a new tab', () => {
     const external = home.querySelectorAll('a[target="_blank"]').map((a) => a.getAttribute('href'));
     expect(external.sort()).toEqual(projects.map((p) => p.url).sort());
