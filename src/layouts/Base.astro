@@ -69,7 +69,8 @@ const fontHref =
   <body>
     <slot />
     <script>
-      // Scroll reveal for [data-reveal] elements (SDD 4.6). Each element reveals once.
+      // Scroll reveal for [data-reveal] elements (SDD 4.6). Replays every time an
+      // element scrolls back into view.
       const targets = document.querySelectorAll<HTMLElement>('[data-reveal]');
       const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
       if (reduce || !('IntersectionObserver' in window)) {
@@ -78,10 +79,7 @@ const fontHref =
         const observer = new IntersectionObserver(
           (entries) => {
             for (const entry of entries) {
-              if (entry.isIntersecting) {
-                entry.target.classList.add('is-visible');
-                observer.unobserve(entry.target);
-              }
+              entry.target.classList.toggle('is-visible', entry.isIntersecting);
             }
           },
           { threshold: 0.05, rootMargin: '0px 0px -4% 0px' },
