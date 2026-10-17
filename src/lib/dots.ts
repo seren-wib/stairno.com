@@ -107,3 +107,62 @@ export function dotField(x: number, y: number, progress: number, time: number, s
     warmth: glow < 0.001 ? 0 : clamp01(glow * 1.2),
   };
 }
+
+// --- Intro: dots burst from the centre and assemble into the picture ---
+
+const smooth = (t: number) => t * t * (3 - 2 * t);
+
+// 0 before `delay`, 1 one second after it, easing out in between.
+export function assemble(seconds: number, delay: number): number {
+  const t = clamp01(seconds - delay);
+  return 1 - (1 - t) * (1 - t) * (1 - t);
+}
+
+// Scale factor for a dot's offset from the canvas centre during assembly:
+// 0 at the centre, overshoots to 1.3 around the middle, settles at 1.
+export function burst(p: number): number {
+  const t = clamp01(p);
+  if (t >= 1) return 1;
+  if (t < 0.55) {
+    const u = t / 0.55;
+    return 1.3 * (1 - (1 - u) * (1 - u));
+  }
+  const u = (t - 0.55) / 0.45;
+  return 1.3 - 0.3 * smooth(u);
+}
+
+export type MaskPoint = { x: number; y: number; sx: number; sy: number; delay: number };
+
+// Deterministic pseudo-random in -1..1 from a cell index.
+function jitter(seed: number): number {
+  const v = Math.sin(seed * 12.9898 + 78.233) * 43758.5453;
+  return (v - Math.floor(v)) * 2 - 1;
+}
+
+// Samples an alpha mask (width*height bytes) on a grid and returns one point
+// per cell whose centre is opaque enough, sorted by x then y. Each point gets
+// a scatter offset and a delay that grows from left to right.
+export function dotsFromMask(
+  alpha: Uint8ClampedArray,
+  width: number,
+  height: number,
+  spacing: number,
+): MaskPoint[] {
+  const points: MaskPoint[] = [];
+  for (let x = spacing / 2; x < width; x += spacing) {
+    for (let y = spacing / 2; y < height; y += spacing) {
+      const px = Math.min(width - 1, Math.floor(x));
+      const py = Math.min(height - 1, Math.floor(y));
+      if ((alpha[py * width + px] ?? 0) < 128) continue;
+      const seed = py * width + px;
+      points.push({
+        x,
+        y,
+        sx: jitter(seed) * spacing * 3 || spacing,
+        sy: jitter(seed + 1) * spacing * 3 || spacing,
+        delay: width > 0 ? x / width : 0,
+      });
+    }
+  }
+  return points;
+}

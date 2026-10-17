@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   STEPS,
   assemble,
+  burst,
   climbCycle,
   dotField,
   dotsFromMask,
