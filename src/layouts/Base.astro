@@ -1,4 +1,7 @@
 ---
+import Fonts from '@stairno/ui/components/Fonts.astro';
+import ThemeInit from '@stairno/ui/components/ThemeInit.astro';
+import '@stairno/ui/base.css';
 import { localePath, locales, t, type Locale } from '../i18n';
 import { site } from '../data/site';
 import '../styles/global.css';
@@ -17,8 +20,6 @@ const title = Astro.props.title ?? dictionary.meta.title;
 const description = Astro.props.description ?? dictionary.meta.description;
 const canonical = new URL(localePath(locale, path), site.url).href;
 const ogLocale = locale === 'ko' ? 'ko_KR' : 'en_US';
-const fontHref =
-  'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css';
 ---
 
 <!doctype html>
@@ -26,23 +27,7 @@ const fontHref =
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <script is:inline>
-      // Apply the theme before paint (FR-15). Same rule as src/lib/theme.ts resolveTheme.
-      (function () {
-        var stored = null;
-        try {
-          stored = localStorage.getItem('theme');
-        } catch (e) {}
-        var theme =
-          stored === 'light' || stored === 'dark'
-            ? stored
-            : window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
-              ? 'dark'
-              : 'light';
-        document.documentElement.setAttribute('data-theme', theme);
-        document.documentElement.style.colorScheme = theme;
-      })();
-    </script>
+    <ThemeInit />
     <script is:inline>
       // Reveal styles only apply once scripts are known to run.
       document.documentElement.classList.add('js');
@@ -67,8 +52,7 @@ const fontHref =
     <meta property="og:image:alt" content={dictionary.meta.title} />
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
-    <link rel="stylesheet" href={fontHref} />
+    <Fonts />
     <slot name="head" />
   </head>
   <body>

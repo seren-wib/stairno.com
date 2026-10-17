@@ -4,25 +4,21 @@ import type { Dictionary } from './types';
 
 export type { Dictionary } from './types';
 
-export const locales = ['ko', 'en'] as const;
-export type Locale = (typeof locales)[number];
-export const defaultLocale: Locale = 'ko';
+// Locale list and path rules are shared with every Stairno site through
+// @stairno/ui; only the dictionaries live here.
+export {
+  alternateLocale,
+  defaultLocale,
+  isLocale,
+  localePath,
+  locales,
+  type Locale,
+} from '@stairno/ui/i18n';
+
+import { type Locale } from '@stairno/ui/i18n';
 
 const dictionaries: Record<Locale, Dictionary> = { ko, en };
 
 export function t(locale: Locale): Dictionary {
   return dictionaries[locale];
-}
-
-export function isLocale(value: string): value is Locale {
-  return (locales as readonly string[]).includes(value);
-}
-
-export function localePath(locale: Locale, path = ''): string {
-  const trimmed = path.replace(/^\/+|\/+$/g, '');
-  return trimmed ? `/${locale}/${trimmed}/` : `/${locale}/`;
-}
-
-export function alternateLocale(locale: Locale): Locale {
-  return locale === 'ko' ? 'en' : 'ko';
 }

@@ -1,8 +1,8 @@
 ---
+import SharedFooter from '@stairno/ui/components/Footer.astro';
 import { projects } from '../data/projects';
 import { site } from '../data/site';
 import { t, type Locale } from '../i18n';
-import LocaleSwitch from './LocaleSwitch.astro';
 
 interface Props {
   locale: Locale;
@@ -10,29 +10,18 @@ interface Props {
 }
 
 const { locale, path = '' } = Astro.props;
-const copy = t(locale).footer;
-const etymology = t(locale).hero.etymology;
-const year = new Date().getFullYear();
+const copy = t(locale);
 ---
 
-<footer class="site-footer">
-  <div class="container footer-grid">
-    <div class="footer-brand" data-reveal="1">
-      <span class="brand">{site.name}</span>
-      <span class="footer-etymology">{etymology}</span>
-      <span class="footer-copy">
-        © {year} {site.name}
-      </span>
-    </div>
-    <nav class="footer-links" aria-label={copy.projects} data-reveal="2">
-      <span class="footer-heading">{copy.projects}</span>
-      {projects.map((project) => (
-        <a href={project.url}>{project.name[locale]}</a>
-      ))}
-    </nav>
-    <div class="footer-links" data-reveal="3">
-      <a href={site.github}>{copy.source}</a>
-      <LocaleSwitch locale={locale} path={path} />
-    </div>
-  </div>
-</footer>
+<SharedFooter
+  locale={locale}
+  path={path}
+  brand={site.name}
+  tagline={copy.hero.etymology}
+  links={{
+    heading: copy.footer.projects,
+    items: projects.map((project) => ({ href: project.url, label: project.name[locale] })),
+  }}
+  source={{ href: site.github, label: copy.footer.source }}
+  switchLabel={copy.nav.switchLocale}
+/>

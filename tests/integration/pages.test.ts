@@ -3,7 +3,7 @@ import { join } from 'node:path';
 import { parse, type HTMLElement } from 'node-html-parser';
 import { describe, expect, it } from 'vitest';
 import { locales } from '../../src/i18n';
-import { resolveTheme } from '../../src/lib/theme';
+import { resolveTheme } from '@stairno/ui/theme';
 
 const dist = join(process.cwd(), 'dist');
 
