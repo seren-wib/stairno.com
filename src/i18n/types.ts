@@ -6,9 +6,9 @@ export type Dictionary = {
     theme: { light: string; dark: string; toggle: string };
   };
   hero: { tagline: string; intro: string; etymology: string };
-  projects: { heading: string };
+  projects: { heading: string; previous: string; next: string; goTo: string };
   news: { heading: string; empty: string };
   contact: { heading: string; action: string };
-  footer: { source: string };
+  footer: { source: string; projects: string };
   notFound: { heading: string; home: string };
 };

@@ -20,9 +20,14 @@ export const ko: Dictionary = {
     etymology:
       '이름은 고트어 stairno(별)에서 왔습니다. 영어로 읽으면 stair가 들어갑니다. 한 칸씩 올라가는 별.',
   },
-  projects: { heading: '프로젝트' },
+  projects: {
+    heading: '프로젝트',
+    previous: '이전 프로젝트',
+    next: '다음 프로젝트',
+    goTo: '{name} 보기',
+  },
   news: { heading: '소식', empty: '아직 소식이 없습니다.' },
   contact: { heading: '연락', action: '메일 보내기' },
-  footer: { source: '소스 코드' },
+  footer: { source: '소스 코드', projects: '프로젝트' },
   notFound: { heading: '페이지를 찾을 수 없습니다', home: '한국어 홈으로' },
 };

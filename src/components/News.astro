@@ -11,7 +11,11 @@ const copy = t(locale).news;
 
 <section class="section" aria-labelledby="news-title">
   <div class="container">
-    <h2 id="news-title">{copy.heading}</h2>
-    <p class="news-line">{copy.empty}</p>
+    <h2 id="news-title" data-reveal>
+      {copy.heading}
+    </h2>
+    <p class="news-line" data-reveal="2">
+      {copy.empty}
+    </p>
   </div>
 </section>

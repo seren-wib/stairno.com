@@ -1,20 +1,36 @@
 ---
+import { projects } from '../data/projects';
 import { site } from '../data/site';
 import { t, type Locale } from '../i18n';
+import LocaleSwitch from './LocaleSwitch.astro';
 
 interface Props {
   locale: Locale;
+  path?: string;
 }
 
-const { locale } = Astro.props;
+const { locale, path = '' } = Astro.props;
+const copy = t(locale).footer;
 const year = new Date().getFullYear();
 ---
 
 <footer class="site-footer">
-  <div class="container">
-    <span>
-      © {year} {site.name}
-    </span>
-    <a href={site.github}>{t(locale).footer.source}</a>
+  <div class="container footer-grid">
+    <div class="footer-brand">
+      <span class="brand">{site.name}</span>
+      <span class="footer-copy">
+        © {year} {site.name}
+      </span>
+    </div>
+    <nav class="footer-links" aria-label={copy.projects}>
+      <span class="footer-heading">{copy.projects}</span>
+      {projects.map((project) => (
+        <a href={project.url}>{project.name[locale]}</a>
+      ))}
+    </nav>
+    <div class="footer-links">
+      <a href={site.github}>{copy.source}</a>
+      <LocaleSwitch locale={locale} path={path} />
+    </div>
   </div>
 </footer>

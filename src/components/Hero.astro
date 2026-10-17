@@ -12,12 +12,18 @@ const copy = t(locale).hero;
 
 <section class="hero" aria-labelledby="hero-title">
   <div class="container hero-inner">
-    <p class="hero-tagline">{copy.tagline}</p>
-    <h1 id="hero-title" class="wordmark">
+    <p class="hero-tagline" data-reveal="1">
+      {copy.tagline}
+    </p>
+    <h1 id="hero-title" class="wordmark" data-reveal="2">
       {site.name}
     </h1>
-    <p class="hero-intro">{copy.intro}</p>
-    <p class="hero-etymology">{copy.etymology}</p>
+    <p class="hero-intro" data-reveal="3">
+      {copy.intro}
+    </p>
+    <p class="hero-etymology" data-reveal="4">
+      {copy.etymology}
+    </p>
   </div>
   <div class="hero-art" aria-hidden="true">
     <span class="step s1"></span>
