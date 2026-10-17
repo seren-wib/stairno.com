@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased]
+
+### Changed
+
+- Tokens, base styles, header, footer, theme toggle, locale switch, theme script and font links now come from the shared package `@stairno/ui` v0.1.0. No visual change.
+
 ## [0.1.0] - 2026-10-17
 
 ### Added
@@ -12,4 +18,5 @@ All notable changes to this project are documented here. The format follows [Kee
 - Vitest suites for data, i18n, theme logic, components and the built output; GitHub Actions CI on every pull request.
 - Deploy workflow for Cloudflare Pages that skips the upload until the account secrets exist.
 
+[Unreleased]: https://github.com/seren-wib/stairno.com/compare/v0.1.0...HEAD
 [0.1.0]: https://github.com/seren-wib/stairno.com/releases/tag/v0.1.0
