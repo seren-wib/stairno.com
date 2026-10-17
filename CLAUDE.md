@@ -30,7 +30,7 @@
 
 ## 스택
 
-Astro 7, TypeScript, 전역 CSS와 CSS 변수, Vitest(+ Astro Container API), Prettier, GitHub Actions, Cloudflare Pages. 자세한 구조와 토큰은 SDD.
+Astro 7, TypeScript, 전역 CSS와 CSS 변수, Vitest(+ Astro Container API), Prettier, GitHub Actions, Cloudflare Pages. 토큰, 리셋·헤더·푸터 CSS, Header·Footer·ThemeToggle·LocaleSwitch·ThemeInit·Fonts, 테마·로케일 헬퍼는 공용 패키지 `@stairno/ui`(레포 `seren-wib/stairno-ui`, `package.json`에 git 태그로 고정)에서 온다. 모양을 바꾸려면 그 레포를 고치고 태그를 올린 뒤 여기 의존성을 올린다. 허브 CSS에서 헤더·푸터 선택자를 덮어쓰지 않는다. 자세한 구조는 SDD.
 
 ```bash
 npm ci

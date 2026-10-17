@@ -17,6 +17,7 @@
 
 ## Updates
 
+- [2026/10/18] **Shared design package.** Tokens, base styles, header, footer, theme toggle, locale switch, theme script and fonts now come from [stairno-ui](https://github.com/seren-wib/stairno-ui) (`@stairno/ui` v0.1.0). Pixel-identical build; the hub keeps only its own sections.
 - [2026/10/17] **v0.1.0, first build.** Brand intro, three project cards, news placeholder, contact link, two locales, two themes, 75 tests, CI and a Cloudflare Pages deploy workflow. [Changelog](CHANGELOG.md)
 
 ## Star History
@@ -102,7 +103,7 @@ The last project builds the site into `dist/` and checks the output, so this tak
   <img src="docs/images/overview.svg" alt="Source files with locale dictionaries and theme logic go through astro build into static HTML for /ko/ and /en/ plus a 404 page; main deploys that output to Cloudflare Pages" width="860">
 </p>
 
-Astro renders `src/pages/[locale]/index.astro` once per locale from the dictionaries in `src/i18n/`. The root `index.html` holds a small script that reads `navigator.languages` and redirects, with a `<noscript>` fallback to Korean. A theme script in `<head>` runs before paint: a stored choice in `localStorage` wins, otherwise `prefers-color-scheme` decides. Everything else is CSS variables.
+Astro renders `src/pages/[locale]/index.astro` once per locale from the dictionaries in `src/i18n/`. The root `index.html` holds a small script that reads `navigator.languages` and redirects, with a `<noscript>` fallback to Korean. A theme script in `<head>` runs before paint: a stored choice in `localStorage` wins, otherwise `prefers-color-scheme` decides. Everything else is CSS variables. The tokens, the base stylesheet, the header, the footer, the two toggles, that theme script and the font links come from the shared package [`@stairno/ui`](https://github.com/seren-wib/stairno-ui), pinned to a git tag in `package.json`, so every Stairno site shares one look and this repository holds only the hub sections.
 
 A few details:
 
@@ -130,7 +131,7 @@ dist/
 ├─ sitemap-index.xml
 ├─ sitemap-0.xml
 ├─ favicon.svg
-└─ _astro/             hashed stylesheet and the slider, reveal and dot-canvas scripts
+└─ _astro/             one hashed stylesheet (package base + hub styles), slider, reveal and dot-canvas scripts
 ```
 
 </details>
@@ -140,7 +141,8 @@ dist/
 - **`src/data/site.ts`**: brand name, production origin, contact email, GitHub link. The email is the only place the `mailto:` target is set.
 - **`src/data/projects.ts`**: the three cards, in order, with a URL and a name and description per locale.
 - **`src/i18n/ko.ts`, `src/i18n/en.ts`**: every visible string. Both must satisfy `Dictionary` in `src/i18n/types.ts`.
-- **`src/styles/tokens.css`**: colours, spacing and type scale for the light and dark themes.
+- **`@stairno/ui` in `package.json`**: the shared design package, pinned to a tag (`github:seren-wib/stairno-ui#v0.1.0`). Colours, type scale, header, footer and toggles change there, then the tag is bumped here.
+- **`src/styles/global.css`**: hub-only styles (hero, sections, slider, news, contact, 404) on top of the package tokens.
 - **`astro.config.mjs`**: `site`, trailing slashes, locales and the sitemap integration.
 - **GitHub secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`**: when both exist, `deploy.yml` uploads `dist/` to the Pages project `stairno-com` on every push to `main`. Until then the workflow builds and skips the upload.
 
