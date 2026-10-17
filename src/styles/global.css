@@ -209,7 +209,7 @@ html.js [data-reveal].is-visible {
   overflow: hidden;
   min-height: 100svh;
   display: grid;
-  align-items: end;
+  align-items: center;
   padding-top: var(--header-height);
   background: linear-gradient(180deg, var(--night) 0%, var(--horizon) 100%);
   color: var(--on-night);
@@ -218,8 +218,8 @@ html.js [data-reveal].is-visible {
 .hero-inner {
   position: relative;
   z-index: 1;
-  padding-top: var(--section-gap);
-  padding-bottom: clamp(3rem, 8vw, 6rem);
+  padding-top: clamp(2rem, 6vw, 4rem);
+  padding-bottom: clamp(4rem, 12vh, 9rem);
 }
 
 .hero-tagline {
@@ -253,8 +253,12 @@ html.js [data-reveal].is-visible {
 }
 
 @media (max-width: 720px) {
+  .hero {
+    align-items: start;
+  }
   .hero-inner {
-    padding-bottom: 40vh;
+    padding-top: 12vh;
+    padding-bottom: 42vh;
   }
 }
 
