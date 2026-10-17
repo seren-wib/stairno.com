@@ -125,23 +125,39 @@ button {
   background: var(--on-night-faint);
 }
 
+.site-menu a {
+  position: relative;
+  white-space: nowrap;
+  transition:
+    padding 0.3s cubic-bezier(0.2, 0.7, 0.2, 1),
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
 .site-menu a::after {
   content: '';
-  display: block;
-  width: 0;
+  position: absolute;
+  left: 0.875rem;
+  right: 0.875rem;
+  bottom: 7px;
   height: 2px;
-  margin-top: 2px;
   border-radius: 1px;
   background: var(--star);
-  transition: width 0.25s ease;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
 .site-menu a[aria-current='true'] {
+  padding: 0 1.375rem;
   color: var(--star);
+  background: var(--on-night-faint);
 }
 
 .site-menu a[aria-current='true']::after {
-  width: 100%;
+  left: 1.375rem;
+  right: 1.375rem;
+  transform: scaleX(1);
 }
 
 @media (max-width: 720px) {
@@ -250,6 +266,12 @@ html.js [data-reveal].is-visible {
   width: 100%;
   height: 100%;
   display: block;
+}
+
+/* Once the canvas draws the wordmark in dots, the real heading stays for
+   assistive tech and layout but is not painted twice. */
+html.js .hero.has-dots .wordmark {
+  color: transparent;
 }
 
 @media (max-width: 720px) {

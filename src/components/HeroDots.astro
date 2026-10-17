@@ -1,63 +1,151 @@
 ---
 // Decorative halftone canvas behind the hero copy. Draws nothing until the
 // script runs, so the hero is a plain night gradient without JavaScript.
+// On load the staircase and the wordmark burst out from the centre and
+// assemble into place; afterwards the star climbs on a loop. SDD 4.2, 4.6.
 ---
 
 <canvas class="hero-dots" data-hero-dots aria-hidden="true"></canvas>
 
 <script>
-  import { climbCycle, dotField } from '../lib/dots';
+  import { assemble, burst, climbCycle, dotField, dotsFromMask, type MaskPoint } from '../lib/dots';
 
   const SPACING = 14;
-  const TIMING = { delay: 0.4, climb: 2.8, hold: 1.6, fade: 0.6 };
+  const LETTER_SPACING = 6;
+  const INTRO = { delay: 0.15, spread: 0.9 }; // per-dot delays spread across this many seconds
+  const INTRO_END = INTRO.delay + INTRO.spread + 1;
+  const TIMING = { delay: INTRO_END, climb: 2.8, hold: 1.6, fade: 0.6 };
+  // On narrow canvases the staircase gets the right 70% instead of 48%.
+  function fieldX(u: number, narrow: boolean): number {
+    if (!narrow) return u;
+    return u < 0.3 ? (u / 0.3) * 0.52 : 0.52 + ((u - 0.3) / 0.7) * 0.48;
+  }
+
   const YELLOW = { r: 255, g: 209, b: 102 };
   const HOT = { r: 255, g: 247, b: 224 };
 
+  function colour(warmth: number, alpha: number): string {
+    const r = Math.round(YELLOW.r + (HOT.r - YELLOW.r) * warmth);
+    const g = Math.round(YELLOW.g + (HOT.g - YELLOW.g) * warmth);
+    const b = Math.round(YELLOW.b + (HOT.b - YELLOW.b) * warmth);
+    return `rgba(${r}, ${g}, ${b}, ${alpha.toFixed(3)})`;
+  }
+
+  function offsetWithin(el: HTMLElement, ancestor: HTMLElement): { left: number; top: number } {
+    let left = 0;
+    let top = 0;
+    let node: HTMLElement | null = el;
+    while (node && node !== ancestor) {
+      left += node.offsetLeft;
+      top += node.offsetTop;
+      node = node.offsetParent as HTMLElement | null;
+    }
+    return { left, top };
+  }
+
+  // Renders the wordmark text off screen with the h1's own font and samples it.
+  function wordmarkPoints(hero: HTMLElement, wordmark: HTMLElement): MaskPoint[] {
+    const style = getComputedStyle(wordmark);
+    const size = parseFloat(style.fontSize);
+    const width = Math.ceil(wordmark.offsetWidth) + LETTER_SPACING;
+    const height = Math.ceil(wordmark.offsetHeight) + LETTER_SPACING;
+    if (width <= 0 || height <= 0) return [];
+    const off = document.createElement('canvas');
+    off.width = width;
+    off.height = height;
+    const ctx = off.getContext('2d');
+    if (!ctx) return [];
+    ctx.font = `${style.fontWeight} ${size}px ${style.fontFamily}`;
+    ctx.textBaseline = 'alphabetic';
+    ctx.fillStyle = '#fff';
+    // The baseline sits about 0.8em below the top of the line box for this face.
+    const lineHeight = parseFloat(style.lineHeight) || size;
+    ctx.fillText(wordmark.textContent?.trim() ?? '', 0, (lineHeight - size) / 2 + size * 0.8);
+    const data = ctx.getImageData(0, 0, width, height).data;
+    const alpha = new Uint8ClampedArray(width * height);
+    for (let i = 0; i < width * height; i++) alpha[i] = data[i * 4 + 3] ?? 0;
+    const { left, top } = offsetWithin(wordmark, hero);
+    return dotsFromMask(alpha, width, height, LETTER_SPACING).map((p) => ({
+      ...p,
+      x: p.x + left,
+      y: p.y + top,
+    }));
+  }
+
   function mount(canvas: HTMLCanvasElement): void {
     const context = canvas.getContext('2d');
-    if (!context) return;
+    const hero = canvas.closest<HTMLElement>('.hero');
+    const wordmark = hero?.querySelector<HTMLElement>('.wordmark') ?? null;
+    if (!context || !hero) return;
     const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
     let width = 0;
     let height = 0;
-    let dpr = 1;
+    let letters: MaskPoint[] = [];
     let start = performance.now();
     let frame = 0;
 
     function resize(): void {
       const rect = canvas.getBoundingClientRect();
-      dpr = Math.min(2, window.devicePixelRatio || 1);
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
       width = Math.max(1, Math.round(rect.width));
       height = Math.max(1, Math.round(rect.height));
       canvas.width = Math.round(width * dpr);
       canvas.height = Math.round(height * dpr);
       context!.setTransform(dpr, 0, 0, dpr, 0, 0);
+      letters = wordmark ? wordmarkPoints(hero!, wordmark) : [];
+      hero!.classList.toggle('has-dots', letters.length > 0);
     }
 
     function draw(now: number): void {
-      const seconds = (now - start) / 1000;
+      const seconds = reduceMotion ? 1e9 : (now - start) / 1000;
       const cycle = reduceMotion ? { progress: 1, strength: 1 } : climbCycle(seconds, TIMING);
+      const cx = width / 2;
+      const cy = height / 2;
+      const maxDist = Math.hypot(cx, cy) || 1;
+      const narrow = width < height;
       context!.clearRect(0, 0, width, height);
+
+      // Background and staircase on the coarse grid.
       const cols = Math.ceil(width / SPACING);
       const rows = Math.ceil(height / SPACING);
       for (let row = 0; row <= rows; row++) {
         for (let col = 0; col <= cols; col++) {
-          const px = col * SPACING + SPACING / 2;
-          const py = row * SPACING + SPACING / 2;
+          const fx = col * SPACING + SPACING / 2;
+          const fy = row * SPACING + SPACING / 2;
           const dot = dotField(
-            px / width,
-            py / height,
+            fieldX(fx / width, narrow),
+            fy / height,
             cycle.progress,
-            reduceMotion ? 0 : seconds,
+            seconds,
             cycle.strength,
           );
-          const r = Math.round(YELLOW.r + (HOT.r - YELLOW.r) * dot.warmth);
-          const g = Math.round(YELLOW.g + (HOT.g - YELLOW.g) * dot.warmth);
-          const b = Math.round(YELLOW.b + (HOT.b - YELLOW.b) * dot.warmth);
-          context!.fillStyle = `rgba(${r}, ${g}, ${b}, ${dot.alpha.toFixed(3)})`;
+          const dist = Math.hypot(fx - cx, fy - cy) / maxDist;
+          const p = assemble(seconds, INTRO.delay + dist * INTRO.spread);
+          if (p <= 0) continue;
+          const isShape = dot.alpha > 0.3; // staircase and star dots burst; sky dots fade in
+          const grow = isShape ? Math.min(1, p * 1.5) : p;
+          const scale = isShape ? burst(p) : 1;
+          const px = cx + (fx - cx) * scale;
+          const py = cy + (fy - cy) * scale;
+          context!.fillStyle = colour(dot.warmth, dot.alpha * grow);
           context!.beginPath();
-          context!.arc(px, py, dot.radius * SPACING, 0, Math.PI * 2);
+          context!.arc(px, py, dot.radius * SPACING * (isShape ? grow : 1), 0, Math.PI * 2);
           context!.fill();
         }
+      }
+
+      // Wordmark on the fine grid.
+      for (const point of letters) {
+        const p = assemble(seconds, INTRO.delay + point.delay * INTRO.spread);
+        if (p <= 0) continue;
+        const scale = burst(p);
+        const grow = Math.min(1, p * 1.4);
+        const px = cx + (point.x + point.sx * (1 - p) - cx) * scale;
+        const py = cy + (point.y + point.sy * (1 - p) - cy) * scale;
+        context!.fillStyle = `rgba(255, 255, 255, ${(0.96 * grow).toFixed(3)})`;
+        context!.beginPath();
+        context!.arc(px, py, LETTER_SPACING * 0.42 * grow, 0, Math.PI * 2);
+        context!.fill();
       }
     }
 
@@ -73,6 +161,12 @@
       frame = requestAnimationFrame(loop);
     }
 
+    // The wordmark font may land after the first layout.
+    document.fonts?.ready.then(() => {
+      resize();
+      if (reduceMotion) draw(performance.now());
+    });
+
     new ResizeObserver(() => {
       resize();
       if (reduceMotion) draw(performance.now());
@@ -83,7 +177,7 @@
       if (document.hidden) {
         cancelAnimationFrame(frame);
       } else {
-        start = performance.now();
+        start = performance.now() - INTRO_END * 1000;
         frame = requestAnimationFrame(loop);
       }
     });
