@@ -44,6 +44,24 @@ export function starAt(progress: number): { x: number; y: number } {
   return { x, y };
 }
 
+export type ClimbTiming = { delay: number; climb: number; hold: number; fade: number };
+
+// Where the star is in its endless loop at `seconds` since load: it waits
+// on the first step for `delay`, climbs for `climb`, holds the top for
+// `hold`, fades out for `fade`, then starts again from the first step.
+export function climbCycle(
+  seconds: number,
+  timing: ClimbTiming,
+): { progress: number; strength: number } {
+  if (seconds < timing.delay) return { progress: 0, strength: 1 };
+  const period = timing.climb + timing.hold + timing.fade;
+  const local = (seconds - timing.delay) % period;
+  if (local < timing.climb) return { progress: local / timing.climb, strength: 1 };
+  if (local < timing.climb + timing.hold) return { progress: 1, strength: 1 };
+  const fading = (local - timing.climb - timing.hold) / timing.fade;
+  return { progress: 1, strength: clamp01(1 - fading) };
+}
+
 export type Dot = {
   // 0..1 opacity of the dot
   alpha: number;
@@ -54,7 +72,7 @@ export type Dot = {
 };
 
 // progress: star climb 0..1; time: seconds, drives a slow shimmer.
-export function dotField(x: number, y: number, progress: number, time: number): Dot {
+export function dotField(x: number, y: number, progress: number, time: number, strength = 1): Dot {
   const top = stairTop(x);
   const step = STEPS.find((s) => x >= s.x && x < s.x + s.width);
   const inside = step !== undefined && y > top;
@@ -71,14 +89,14 @@ export function dotField(x: number, y: number, progress: number, time: number): 
     alpha = 0.25 + 0.7 * shade;
     radius = 0.2 + 0.28 * shade;
   } else {
-    alpha = 0.035 + 0.03 * shimmer;
-    radius = 0.1 + 0.03 * shimmer;
+    alpha = 0.14 + 0.08 * shimmer;
+    radius = 0.15 + 0.04 * shimmer;
   }
 
   const star = starAt(progress);
   const dx = (x - star.x) * 1.6; // the field is wider than tall; keep the glow round-ish
   const dy = y - star.y;
-  const glow = Math.exp(-(dx * dx + dy * dy) / (2 * 0.06 * 0.06));
+  const glow = Math.exp(-(dx * dx + dy * dy) / (2 * 0.06 * 0.06)) * clamp01(strength);
 
   alpha = alpha + (1 - alpha) * glow;
   radius = radius + (0.5 - radius) * glow;

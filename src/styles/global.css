@@ -169,7 +169,7 @@ html.js [data-reveal='4'] {
   transition-delay: 0.45s;
 }
 
-html.js .section h2[data-reveal] {
+html.js .section h2[data-reveal]:not(.is-visible) {
   transform: translateY(96px);
 }
 
