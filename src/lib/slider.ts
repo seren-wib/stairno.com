@@ -72,6 +72,25 @@ export function createSlider(root: HTMLElement): { go(index: number): void; stop
     restart();
   });
 
+  // Start from the first slide whenever the slider scrolls into view, so a
+  // visitor always sees 1 → 2 → 3; stop while it is off screen.
+  if ('IntersectionObserver' in window) {
+    stop();
+    new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            go(0);
+            restart();
+          } else {
+            stop();
+          }
+        }
+      },
+      { threshold: 0.4 },
+    ).observe(root);
+  }
+
   root.addEventListener('mouseenter', stop);
   root.addEventListener('mouseleave', play);
   root.addEventListener('focusin', stop);
@@ -82,7 +101,7 @@ export function createSlider(root: HTMLElement): { go(index: number): void; stop
   });
 
   render();
-  play();
+  if (!('IntersectionObserver' in window)) play();
 
   return { go, stop };
 }

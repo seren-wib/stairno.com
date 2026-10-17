@@ -131,10 +131,20 @@ export function burst(p: number): number {
   return 1.3 - 0.3 * smooth(u);
 }
 
-export type MaskPoint = { x: number; y: number; sx: number; sy: number; delay: number };
+// x, y: final position. sx, sy: small scatter offset. rx, ry: a random
+// start position anywhere in the field (0..1). delay: 0..1, grows to the right.
+export type MaskPoint = {
+  x: number;
+  y: number;
+  sx: number;
+  sy: number;
+  rx: number;
+  ry: number;
+  delay: number;
+};
 
 // Deterministic pseudo-random in -1..1 from a cell index.
-function jitter(seed: number): number {
+export function jitter(seed: number): number {
   const v = Math.sin(seed * 12.9898 + 78.233) * 43758.5453;
   return (v - Math.floor(v)) * 2 - 1;
 }
@@ -174,6 +184,8 @@ export function dotsFromMask(
         y,
         sx: jitter(seed) * spacing * 3 || spacing,
         sy: jitter(seed + 1) * spacing * 3 || spacing,
+        rx: (jitter(seed + 2) + 1) / 2,
+        ry: (jitter(seed + 3) + 1) / 2,
         delay: width > 0 ? x / width : 0,
       });
     }

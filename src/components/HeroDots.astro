@@ -8,12 +8,23 @@
 <canvas class="hero-dots" data-hero-dots aria-hidden="true"></canvas>
 
 <script>
-  import { assemble, burst, climbCycle, dotField, dotsFromMask, type MaskPoint } from '../lib/dots';
+  import {
+    assemble,
+    climbCycle,
+    dotField,
+    dotsFromMask,
+    jitter,
+    type MaskPoint,
+  } from '../lib/dots';
 
   const SPACING = 14;
   const LETTER_SPACING = 6;
-  const INTRO = { delay: 0.15, spread: 0.9 }; // per-dot delays spread across this many seconds
-  const INTRO_END = INTRO.delay + INTRO.spread + 1;
+  // Dots start scattered all over the canvas and drift into place: each dot
+  // takes `settle` seconds, starting between `delay` and `delay + spread`.
+  const INTRO = { delay: 0.2, spread: 1.4, settle: 1.8 };
+  const INTRO_END = INTRO.delay + INTRO.spread + INTRO.settle;
+  const settleAt = (seconds: number, delay: number) =>
+    assemble(seconds / INTRO.settle, delay / INTRO.settle);
   const TIMING = { delay: INTRO_END, climb: 2.8, hold: 1.6, fade: 0.6 };
   // On narrow canvases the staircase gets the right 70% instead of 48% and
   // sits in the lower half, under the copy.
@@ -104,9 +115,6 @@
     function draw(now: number): void {
       const seconds = reduceMotion ? 1e9 : (now - start) / 1000;
       const cycle = reduceMotion ? { progress: 1, strength: 1 } : climbCycle(seconds, TIMING);
-      const cx = width / 2;
-      const cy = height / 2;
-      const maxDist = Math.hypot(cx, cy) || 1;
       const narrow = width < height;
       context!.clearRect(0, 0, width, height);
 
@@ -124,14 +132,15 @@
             seconds,
             cycle.strength,
           );
-          const dist = Math.hypot(fx - cx, fy - cy) / maxDist;
-          const p = assemble(seconds, INTRO.delay + dist * INTRO.spread);
+          const seed = row * 4096 + col;
+          const p = settleAt(seconds, INTRO.delay + ((jitter(seed + 4) + 1) / 2) * INTRO.spread);
           if (p <= 0) continue;
-          const isShape = dot.alpha > 0.3; // staircase and star dots burst; sky dots fade in
-          const grow = isShape ? Math.min(1, p * 1.5) : p;
-          const scale = isShape ? burst(p) : 1;
-          const px = cx + (fx - cx) * scale;
-          const py = cy + (fy - cy) * scale;
+          const isShape = dot.alpha > 0.3; // staircase and star dots drift in; sky dots fade in
+          const sx = ((jitter(seed + 2) + 1) / 2) * width;
+          const sy = ((jitter(seed + 3) + 1) / 2) * height;
+          const px = isShape ? sx + (fx - sx) * p : fx;
+          const py = isShape ? sy + (fy - sy) * p : fy;
+          const grow = isShape ? Math.min(1, 0.3 + p) : p;
           context!.fillStyle = colour(dot.warmth, dot.alpha * grow);
           context!.beginPath();
           context!.arc(px, py, dot.radius * SPACING * (isShape ? grow : 1), 0, Math.PI * 2);
@@ -141,12 +150,11 @@
 
       // Wordmark on the fine grid.
       for (const point of letters) {
-        const p = assemble(seconds, INTRO.delay + point.delay * INTRO.spread);
+        const p = settleAt(seconds, INTRO.delay + point.delay * INTRO.spread);
         if (p <= 0) continue;
-        const scale = burst(p);
-        const grow = Math.min(1, p * 1.4);
-        const px = cx + (point.x + point.sx * (1 - p) - cx) * scale;
-        const py = cy + (point.y + point.sy * (1 - p) - cy) * scale;
+        const grow = Math.min(1, 0.3 + p);
+        const px = point.rx * width + (point.x - point.rx * width) * p;
+        const py = point.ry * height + (point.y - point.ry * height) * p;
         context!.fillStyle = `rgba(255, 255, 255, ${(0.96 * grow).toFixed(3)})`;
         context!.beginPath();
         context!.arc(px, py, LETTER_SPACING * 0.42 * grow, 0, Math.PI * 2);
