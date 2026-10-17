@@ -24,7 +24,7 @@ const sections = [
       {site.name}
     </a>
     <nav class="site-nav">
-      <ul class="site-menu">
+      <ul class="site-menu" data-menu>
         {sections.map((item) => (
           <li>
             <a href={item.href}>{item.label}</a>
@@ -43,5 +43,39 @@ const sections = [
     const update = () => header.classList.toggle('is-solid', window.scrollY > 24);
     update();
     window.addEventListener('scroll', update, { passive: true });
+  }
+
+  // Scroll spy: the menu link whose section fills most of the viewport is current.
+  const links = Array.from(
+    document.querySelectorAll<HTMLAnchorElement>('[data-menu] a[href^="#"]'),
+  );
+  const sections = links
+    .map((link) => document.querySelector<HTMLElement>(link.getAttribute('href') ?? ''))
+    .filter((section): section is HTMLElement => section !== null);
+  if (links.length > 0 && sections.length > 0 && 'IntersectionObserver' in window) {
+    const ratios = new Map<Element, number>();
+    const setCurrent = () => {
+      let best: Element | null = null;
+      let bestRatio = 0.2;
+      for (const [section, ratio] of ratios) {
+        if (ratio > bestRatio) {
+          best = section;
+          bestRatio = ratio;
+        }
+      }
+      for (const link of links) {
+        const current = best !== null && link.getAttribute('href') === `#${best.id}`;
+        if (current) link.setAttribute('aria-current', 'true');
+        else link.removeAttribute('aria-current');
+      }
+    };
+    const spy = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) ratios.set(entry.target, entry.intersectionRatio);
+        setCurrent();
+      },
+      { threshold: [0, 0.2, 0.4, 0.6, 0.8, 1], rootMargin: '-72px 0px 0px 0px' },
+    );
+    sections.forEach((section) => spy.observe(section));
   }
 </script>

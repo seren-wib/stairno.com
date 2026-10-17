@@ -71,6 +71,12 @@ describe('Header', () => {
     expect(root.querySelector('header[data-sticky]')).not.toBeNull();
   });
 
+  it('FR-4 marks the menu for the scroll spy and starts with nothing current', async () => {
+    const root = await render(Header, { locale: 'ko' });
+    expect(root.querySelector('ul[data-menu]')).not.toBeNull();
+    expect(root.querySelector('nav a[aria-current]')).toBeNull();
+  });
+
   it.each(locales)('FR-4 links to the three sections of the page in %s', async (locale) => {
     const root = await render(Header, { locale });
     const copy = t(locale);
@@ -107,6 +113,12 @@ describe('scroll reveal', () => {
 });
 
 describe('Footer', () => {
+  it('reveals its three columns in sequence', async () => {
+    const root = await render(Footer, { locale: 'ko' });
+    const targets = root.querySelectorAll('footer [data-reveal]');
+    expect(targets.map((el) => el.getAttribute('data-reveal'))).toEqual(['1', '2', '3']);
+  });
+
   it.each(locales)(
     'FR-9 links to every project in the same tab plus the source in %s',
     async (locale) => {
