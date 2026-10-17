@@ -125,6 +125,25 @@ button {
   background: var(--on-night-faint);
 }
 
+.site-menu a::after {
+  content: '';
+  display: block;
+  width: 0;
+  height: 2px;
+  margin-top: 2px;
+  border-radius: 1px;
+  background: var(--star);
+  transition: width 0.25s ease;
+}
+
+.site-menu a[aria-current='true'] {
+  color: var(--star);
+}
+
+.site-menu a[aria-current='true']::after {
+  width: 100%;
+}
+
 @media (max-width: 720px) {
   .site-menu {
     display: none;
@@ -167,6 +186,10 @@ html.js [data-reveal='3'] {
 }
 html.js [data-reveal='4'] {
   transition-delay: 0.45s;
+}
+
+html.js .site-footer [data-reveal] {
+  transform: translateY(40px);
 }
 
 html.js .section h2[data-reveal]:not(.is-visible) {
