@@ -16,6 +16,14 @@
   --dot-text-color: currentColor;
 }
 
+/* Dot drawings are pictures of words: selecting them would light up the hidden text over the
+   dots. Screen readers still read it; the rest of the page stays selectable. */
+.has-dot-text,
+.hero .wordmark {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
 .has-dot-text.is-dots {
   color: transparent;
   transition: color 0.45s ease;

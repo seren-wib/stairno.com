@@ -3,10 +3,17 @@ import { describe, expect, it } from 'vitest';
 
 const css = readFileSync(new URL('../../src/styles/global.css', import.meta.url), 'utf8');
 
-// The rule block for a selector list that contains `selector`.
+// Every declaration block whose selector list names `selector` exactly, joined.
 function blockFor(selector: string): string {
-  const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  return css.match(new RegExp(`[^{}]*${escaped}[^{}]*\\{([^}]*)\\}`))?.[1] ?? '';
+  return [...css.matchAll(/([^{}]+)\{([^}]*)\}/g)]
+    .filter(([, selectors]) =>
+      (selectors ?? '')
+        .split(',')
+        .map((s) => s.replace(/\/\*[\s\S]*?\*\//g, '').trim())
+        .includes(selector),
+    )
+    .map(([, , body]) => body)
+    .join(';');
 }
 
 describe('global.css', () => {
