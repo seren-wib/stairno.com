@@ -13,6 +13,14 @@ export const ko: Dictionary = {
       dark: '다크 모드로 전환',
       toggle: '테마 전환',
     },
+    accountMenu: {
+      signedIn: '계정 메뉴',
+      signedOut: '로그인 메뉴',
+      manage: '계정 관리',
+      signOut: '로그아웃',
+      signIn: '로그인',
+      signUp: '가입',
+    },
   },
   hero: {
     tagline: '작은 걸 끝까지',

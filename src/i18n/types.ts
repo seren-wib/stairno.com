@@ -4,6 +4,15 @@ export type Dictionary = {
     home: string;
     switchLocale: string;
     theme: { light: string; dark: string; toggle: string };
+    // FR-20: same wording as the account center's menu.
+    accountMenu: {
+      signedIn: string;
+      signedOut: string;
+      manage: string;
+      signOut: string;
+      signIn: string;
+      signUp: string;
+    };
   };
   hero: { tagline: string; intro: string; etymology: string };
   projects: { heading: string; previous: string; next: string; goTo: string };

@@ -1,4 +1,5 @@
 ---
+import AccountMenu from '@stairno/ui/components/AccountMenu.astro';
 import SharedHeader from '@stairno/ui/components/Header.astro';
 import { t, type Locale } from '../i18n';
 import { site } from '../data/site';
@@ -25,6 +26,11 @@ const items = [
   { href: '#news', label: copy.news.heading, labelAttrs: dotText },
   { href: '#contact', label: copy.contact.heading, labelAttrs: dotText },
 ];
+
+// FR-20: no server here, so the menu reads the session in the browser. Sign-in and sign-up come
+// back to this page's locale home (account.stairno.com FR-81).
+const account = `${site.accountUrl}/${locale}`;
+const back = encodeURIComponent(`${site.url}/${locale}/`);
 ---
 
 <SharedHeader
@@ -34,4 +40,15 @@ const items = [
   items={items}
   switchLabel={copy.nav.switchLocale}
   themeLabels={copy.nav.theme}
-/>
+>
+  <AccountMenu
+    slot="actions"
+    locale={locale}
+    labels={copy.nav.accountMenu}
+    accountUrl={`${account}/`}
+    signInUrl={`${account}/sign-in?redirect=${back}`}
+    signUpUrl={`${account}/sign-up?redirect=${back}`}
+    signOutUrl={`${site.apiUrl}/auth/sign-out`}
+    sessionUrl={`${site.apiUrl}/auth/get-session`}
+  />
+</SharedHeader>
