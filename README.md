@@ -2,7 +2,7 @@
 
 [**Quickstart**](#quickstart) | [**How it works**](#how-it-works) | [**Configuration**](#configuration) | [**Examples**](#examples) | [**FAQ**](#faq)
 
-**stairno.com** is the hub site for the **Stairno** brand: **what Stairno is, and links to its three projects** (Works, Games, Labs). It is a **static site with no backend**, built with Astro 7, served in **Korean and English** with **light and dark themes**, and deployed to Cloudflare Pages from the `main` branch. Node 22 or newer, npm, no other runtime.
+**stairno.com** is the hub site for the **Stairno** brand: **what Stairno is, and links to its three projects** (Works, Games, Labs). It is a **static site with no backend**, built with Astro 7, served in **Korean and English** with **light and dark themes**, and deployed to Cloudflare Pages from the `main` branch. Node 22.22 or newer, npm, no other runtime.
 
 ![GitHub Repo stars](https://img.shields.io/github/stars/seren-wib/stairno.com?style=social)
 [![ci](https://github.com/seren-wib/stairno.com/actions/workflows/ci.yml/badge.svg)](https://github.com/seren-wib/stairno.com/actions/workflows/ci.yml)
@@ -53,7 +53,7 @@ Stairno runs three projects on three domains. Without a hub:
 stairno.com keeps the brand page small and separate:
 
 - **One page per language.** Intro, three cards, a news placeholder and a mail link. Nothing else.
-- **No backend.** `astro build` writes HTML, CSS and a few hundred bytes of JS. There is nothing to patch or scale.
+- **No backend.** `astro build` writes HTML, CSS and about 10 KB of JS. There is nothing to patch or scale.
 - **Content lives in data files.** Copy in `src/i18n/`, projects in `src/data/`. Changing words never touches a component.
 - **Tests gate every change.** Unit, component and built-output tests run on each pull request before merge.
 
@@ -94,7 +94,7 @@ npm test
 The last project builds the site into `dist/` and checks the output, so this takes a few seconds.
 
 <p align="center">
-  <img src="docs/images/tests.svg" alt="npm test output: 8 test files and 75 tests passing after the build" width="820">
+  <img src="docs/images/tests.svg" alt="npm test output: 11 test files and 118 tests passing after the build" width="820">
 </p>
 
 ## How it works
@@ -131,6 +131,7 @@ dist/
 ├─ sitemap-index.xml
 ├─ sitemap-0.xml
 ├─ favicon.svg
+├─ og.png            Open Graph image for link previews
 └─ _astro/             one hashed stylesheet (package base + hub styles), slider, reveal and dot-canvas scripts
 ```
 
@@ -143,6 +144,7 @@ dist/
 - **`src/i18n/ko.ts`, `src/i18n/en.ts`**: every visible string. Both must satisfy `Dictionary` in `src/i18n/types.ts`.
 - **`@stairno/ui` in `package.json`**: the shared design package, pinned to a tag (`github:seren-wib/stairno-ui#v0.1.0`). Colours, type scale, header, footer and toggles change there, then the tag is bumped here.
 - **`src/styles/global.css`**: hub-only styles (hero, sections, slider, news, contact, 404) on top of the package tokens.
+- **`public/`**: `favicon.svg`, the Open Graph image `og.png` and `robots.txt`, copied into `dist/` as they are.
 - **`astro.config.mjs`**: `site`, trailing slashes, locales and the sitemap integration.
 - **GitHub secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`**: when both exist, `deploy.yml` uploads `dist/` to the Pages project `stairno-com` on every push to `main`. Until then the workflow builds and skips the upload.
 

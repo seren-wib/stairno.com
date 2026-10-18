@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="288" viewBox="0 0 900 288" role="img" aria-label="Terminal output of npm test">
-  <rect width="900" height="288" rx="12" fill="#0d1117"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="328" viewBox="0 0 900 328" role="img" aria-label="Terminal output of npm test">
+  <rect width="900" height="328" rx="12" fill="#0d1117"/>
   <rect width="900" height="36" rx="12" fill="#161b22"/>
   <rect y="24" width="900" height="12" fill="#161b22"/>
   <circle cx="22" cy="18" r="6" fill="#ff5f57"/>
@@ -8,15 +8,17 @@
   <text x="450" y="23" text-anchor="middle" fill="#8b949e" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13">stairno.com</text>
   <g font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" font-size="13.5" fill="#e6edf3">
     <text x="24" y="64"><tspan fill="#3fb950">$</tspan> npm test</text>
-    <text x="24" y="84" xml:space="preserve"> RUN  v5.0.5 ~/projects/stairno/stairno.com</text>
-    <text x="24" y="104" xml:space="preserve">03:56:29   ├─ /404.html (+10ms) </text>
-    <text x="24" y="124" xml:space="preserve">03:56:29   ├─ /ko/index.html (+5ms) </text>
-    <text x="24" y="144" xml:space="preserve">03:56:29   ├─ /en/index.html (+3ms) </text>
-    <text x="24" y="164" xml:space="preserve">03:56:29   ├─ /index.html (+3ms) </text>
-    <text x="24" y="184" xml:space="preserve">03:56:29 [@astrojs/sitemap] `sitemap-index.xml` created at `dist`</text>
-    <text x="24" y="204" xml:space="preserve"> Test Files  8 <tspan fill="#3fb950">passed</tspan> (8)</text>
-    <text x="24" y="224" xml:space="preserve">      Tests  75 <tspan fill="#3fb950">passed</tspan> (75)</text>
-    <text x="24" y="244" xml:space="preserve">   Start at  03:56:27</text>
-    <text x="24" y="264" xml:space="preserve">   Duration  3.15s (transform 62%, import 30%, tests 6%, worker 2%)</text>
+    <text x="24" y="84" xml:space="preserve"> RUN  v5.0.5 ~/qs/stairno.com</text>
+    <text x="24" y="104" xml:space="preserve"></text>
+    <text x="24" y="124" xml:space="preserve">11:50:14   ├─ /404.html (+10ms) </text>
+    <text x="24" y="144" xml:space="preserve">11:50:14   ├─ /ko/index.html (+5ms) </text>
+    <text x="24" y="164" xml:space="preserve">11:50:14   ├─ /en/index.html (+2ms) </text>
+    <text x="24" y="184" xml:space="preserve">11:50:14   ├─ /index.html (+3ms) </text>
+    <text x="24" y="204" xml:space="preserve">11:50:14 [@astrojs/sitemap] `sitemap-index.xml` created at `dist`</text>
+    <text x="24" y="224" xml:space="preserve"></text>
+    <text x="24" y="244" xml:space="preserve"> Test Files  11 <tspan fill="#3fb950">passed</tspan> (11)</text>
+    <text x="24" y="264" xml:space="preserve">      Tests  118 <tspan fill="#3fb950">passed</tspan> (118)</text>
+    <text x="24" y="284" xml:space="preserve">   Start at  11:50:12</text>
+    <text x="24" y="304" xml:space="preserve">   Duration  5.78s (transform 73%, import 21%, tests 4%, worker 1%)</text>
   </g>
 </svg>
